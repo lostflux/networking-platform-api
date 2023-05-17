@@ -1,3 +1,6 @@
+# Test
+--> This is a commit test
+
 # Project Name
 
 ![Team Photo](Insert a Team Photo URL here)
