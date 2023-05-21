@@ -1,13 +1,18 @@
 import mongoose, { Schema } from 'mongoose';
 
 const PersonSchema = new Schema({
-  name: String,
+  name: {
+    type: String,
+    required: true,
+  },
   title: String,
   email: String,
   linkedin: String,
   description: String,
+  location: String,
+  associatedCompany: [{ type: Schema.Types.ObjectId, ref: 'Company' }],
+  notes: [Map],
   tags: [String],
-  associatedCompany: Schema.Types.ObjectId,
 }, {
   toObject: { virtuals: true },
   toJSON: { virtuals: true },

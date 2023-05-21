@@ -1,11 +1,16 @@
 import mongoose, { Schema } from 'mongoose';
 
 const CompanySchema = new Schema({
-  name: String,
+  name: {
+    type: String,
+    required: true,
+  },
   website: String,
   linkedin: String,
   description: String,
+  location: String,
   tags: [String],
+  notes: [Map],
   associatedPeople: [
     { type: Schema.Types.ObjectId, ref: 'People' },
   ],

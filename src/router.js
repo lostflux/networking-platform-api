@@ -12,7 +12,7 @@ router.post('/companies', async (req, res) => {
   const companyFields = req.body;
 
   try {
-    const result = await Company.createPost(companyFields);
+    const result = await Company.createCompany(companyFields);
     return res.json(result);
   } catch (error) {
     return res.status(404).json({ error: error.message });
@@ -21,7 +21,7 @@ router.post('/companies', async (req, res) => {
 
 router.get('/companies', async (req, res) => {
   try {
-    const result = await Company.getPosts();
+    const result = await Company.getCompanies();
     return res.json(result);
   } catch (error) {
     return res.status(404).json({ error: error.message });
@@ -32,7 +32,7 @@ router.get('/companies/search', async (req, res) => {
   const { q: searchTerm } = req.query;
 
   try {
-    const result = await Company.findPosts(searchTerm);
+    const result = await Company.findCompanies(searchTerm);
     return res.json(result);
   } catch (error) {
     return res.status(404).json({ error: error.message });
@@ -43,7 +43,7 @@ router.get('/companies/:id', async (req, res) => {
   const companyId = req.params.id;
 
   try {
-    const result = await Company.getPost(companyId);
+    const result = await Company.getCompany(companyId);
     return res.json(result);
   } catch (error) {
     return res.status(404).json({ error: error.message });
@@ -55,7 +55,7 @@ router.put('/companies/:id', async (req, res) => {
   const companyFields = req.body;
 
   try {
-    const result = await Company.updatePost(companyId, companyFields);
+    const result = await Company.updateCompany(companyId, companyFields);
     return res.json(result);
   } catch (error) {
     return res.status(404).json({ error: error.message });
@@ -66,7 +66,7 @@ router.delete('/companies/:id', async (req, res) => {
   const companyId = req.params.id;
 
   try {
-    const result = await Company.deletePost(companyId);
+    const result = await Company.deleteCompany(companyId);
     return res.json(result);
   } catch (error) {
     return res.status(404).json({ error: error.message });
@@ -77,7 +77,7 @@ router.post('/people', async (req, res) => {
   const personFields = req.body;
 
   try {
-    const result = await Person.createPost(personFields);
+    const result = await Person.createPerson(personFields);
     return res.json(result);
   } catch (error) {
     return res.status(404).json({ error: error.message });
@@ -86,7 +86,7 @@ router.post('/people', async (req, res) => {
 
 router.get('/people', async (req, res) => {
   try {
-    const result = await Person.getPosts();
+    const result = await Person.getPeople();
     return res.json(result);
   } catch (error) {
     return res.status(404).json({ error: error.message });
@@ -97,7 +97,7 @@ router.get('/people/search', async (req, res) => {
   const { q: searchTerm } = req.query;
 
   try {
-    const result = await Person.findPosts(searchTerm);
+    const result = await Person.findPeople(searchTerm);
     return res.json(result);
   } catch (error) {
     return res.status(404).json({ error: error.message });
@@ -108,7 +108,7 @@ router.get('/people/:id', async (req, res) => {
   const personId = req.params.id;
 
   try {
-    const result = await Person.getPost(personId);
+    const result = await Person.getPerson(personId);
     return res.json(result);
   } catch (error) {
     return res.status(404).json({ error: error.message });
@@ -120,7 +120,7 @@ router.put('/people/:id', async (req, res) => {
   const personFields = req.body;
 
   try {
-    const result = await Person.updatePost(personId, personFields);
+    const result = await Person.updatePerson(personId, personFields);
     return res.json(result);
   } catch (error) {
     return res.status(404).json({ error: error.message });
@@ -131,7 +131,7 @@ router.delete('/people/:id', async (req, res) => {
   const personId = req.params.id;
 
   try {
-    const result = await Person.deletePost(personId);
+    const result = await Person.deletePerson(personId);
     return res.json(result);
   } catch (error) {
     return res.status(404).json({ error: error.message });

@@ -6,8 +6,10 @@ export async function createPerson(personFields) {
   person.website = personFields.website || '';
   person.linkedin = personFields.linkedin || '';
   person.description = personFields.description || '';
+  person.location = personFields.location || '';
+  person.notes = personFields.location || '';
   person.tags = personFields.tags || [];
-  person.associatedPerson = personFields.associatedPerson || [];
+  person.associatedCompany = personFields.associatedCompany;
 
   try {
     const savedPerson = await person.save();
@@ -17,7 +19,7 @@ export async function createPerson(personFields) {
   }
 }
 
-export async function getpeople() {
+export async function getPeople() {
   try {
     const people = await Person.find({}, 'name title email tags associatedCompany');
     return people;
@@ -26,7 +28,7 @@ export async function getpeople() {
   }
 }
 
-export async function findpeople(query) {
+export async function findPeople(query) {
   try {
     const searchedPeople = await findpeople.find({ $text: { $search: query } }, 'name title email tags associatedCompany');
     return searchedPeople;
