@@ -5,8 +5,8 @@ export async function createNote(noteFields) {
   note.title = noteFields.title;
   note.content = noteFields.content || '';
   note.tags = noteFields.tags || [];
-  note.associatedCompany = noteFields.associatedCompany || '';
-  note.associatedNote = noteFields.associatedNote || '';
+  note.associatedCompany = noteFields.associatedCompany || null;
+  note.associatedNote = noteFields.associatedNote || null;
 
   try {
     const savedNote = await note.save();

@@ -6,8 +6,8 @@ export async function createTask(taskFields) {
   task.description = taskFields.description || '';
   task.tags = taskFields.tags || [];
   task.dueDate = taskFields.dueDate || null;
-  task.associatedCompany = taskFields.associatedCompany || '';
-  task.associatedTask = taskFields.associatedTask || '';
+  task.associatedCompany = taskFields.associatedCompany || null;
+  task.associatedTask = taskFields.associatedTask || null;
 
   try {
     const savedTask = await task.save();

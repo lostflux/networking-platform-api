@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import * as Company from './controllers/company_controller';
 import * as Person from './controllers/person_controller';
+import * as Note from './controllers/note_controller';
 
 const router = Router();
 
@@ -132,6 +133,71 @@ router.delete('/people/:id', async (req, res) => {
 
   try {
     const result = await Person.deletePerson(personId);
+    return res.json(result);
+  } catch (error) {
+    return res.status(404).json({ error: error.message });
+  }
+});
+
+router.post('/notes', async (req, res) => {
+  const personFields = req.body;
+
+  try {
+    const result = await Note.createPerson(personFields);
+    return res.json(result);
+  } catch (error) {
+    return res.status(404).json({ error: error.message });
+  }
+});
+
+router.get('/notes', async (req, res) => {
+  try {
+    const result = await Note.getNotes();
+    return res.json(result);
+  } catch (error) {
+    return res.status(404).json({ error: error.message });
+  }
+});
+
+router.get('/notes/search', async (req, res) => {
+  const { q: searchTerm } = req.query;
+
+  try {
+    const result = await Note.findNotes(searchTerm);
+    return res.json(result);
+  } catch (error) {
+    return res.status(404).json({ error: error.message });
+  }
+});
+
+router.get('/notes/:id', async (req, res) => {
+  const noteId = req.params.id;
+
+  try {
+    const result = await Note.getNote(noteId);
+    return res.json(result);
+  } catch (error) {
+    return res.status(404).json({ error: error.message });
+  }
+});
+
+router.put('/notes/:id', async (req, res) => {
+  const noteId = req.params.id;
+  const noteFields = req.body;
+
+  try {
+    const result = await Note.updateCompany(noteId, noteFields);
+    return res.json(result);
+  } catch (error) {
+    return res.status(404).json({ error: error.message });
+  }
+});
+
+router.delete('/notes/:id', async (req, res) => {
+  const noteId = req.params.id;
+
+  try {
+    const result = await Note.deleteNote(noteId);
     return res.json(result);
   } catch (error) {
     return res.status(404).json({ error: error.message });

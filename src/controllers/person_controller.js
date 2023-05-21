@@ -1,4 +1,5 @@
 import Person from '../models/person_model';
+import Company from '../models/company_model';
 
 export async function createPerson(personFields) {
   const person = new Person();
@@ -9,8 +10,12 @@ export async function createPerson(personFields) {
   person.location = personFields.location || '';
   person.notes = personFields.notes || [];
   person.tags = personFields.tags || [];
-  person.tasks = personFields.tags || [];
-  person.associatedCompany = personFields.associatedCompany || '';
+  person.tasks = personFields.tasks || [];
+  person.associatedCompany = personFields.associatedCompany || null;
+
+  if (person.associatedCompany) {
+    await addToAssociatedCompany(person.associatedCompany, person);
+  }
 
   try {
     const savedPerson = await person.save();
@@ -53,6 +58,9 @@ export async function getPerson(id) {
 export async function deletePerson(id) {
   try {
     const person = await Person.findById(id);
+    if (person.associatedCompany) {
+      await deleteFromExAssociatedCompany(person.associatedCompany, person);
+    }
     return Person.deleteOne({ _id: person._id });
   } catch (error) {
     throw new Error(`delete person error: ${error}`);
@@ -63,7 +71,7 @@ export async function updatePerson(id, personFields) {
   try {
     const person = await Person.findById(id);
     const {
-      name, title, linkedin, email, description, tags, associatedPerson, notes, tasks,
+      name, title, linkedin, email, description, tags, associatedCompany, notes, tasks,
     } = personFields;
     if (name) {
       person.name = name;
@@ -83,17 +91,44 @@ export async function updatePerson(id, personFields) {
     if (tags) {
       person.tags = tags;
     }
-    if (associatedPerson) {
-      person.associatedPerson = associatedPerson;
+    if (associatedCompany) {
+      if (person.associatedCompany) {
+        await deleteFromExAssociatedCompany(person.associatedCompany, person);
+      }
+      await addToAssociatedCompany(associatedCompany, person);
+      person.associatedCompany = associatedCompany;
     }
     if (notes) {
-      company.notes = notes;
+      person.notes = notes;
     }
     if (tasks) {
-      company.notes = tasks;
+      person.notes = tasks;
     }
     return person.save();
   } catch (error) {
     throw new Error(`delete person error: ${error}`);
+  }
+}
+
+async function addToAssociatedCompany(companyId, person) {
+  try {
+    const company = await Company.findById(companyId);
+    if (!company) {
+      throw new Error('unable to find company');
+    }
+    company.associatedPeople.push(person.id);
+    return company.save();
+  } catch (error) {
+    throw new Error(`update associated company error: ${error}`);
+  }
+}
+
+async function deleteFromExAssociatedCompany(companyId, person) {
+  try {
+    const company = await Company.findById(companyId);
+    company.associatedPeople.pull(person.id);
+    return company.save();
+  } catch (error) {
+    throw new Error(`update associated company error: ${error}`);
   }
 }
