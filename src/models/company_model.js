@@ -10,16 +10,16 @@ const CompanySchema = new Schema({
   description: String,
   location: String,
   tags: [String],
-  notes: [{
+  notes: [new Schema({
     title: String,
-    id: { type: Schema.Types.ObjectId, ref: 'Note' },
-  }],
+    noteId: { type: Schema.Types.ObjectId, ref: 'Note' },
+  }, { _id: false })],
   associatedPeople: [
     { type: Schema.Types.ObjectId, ref: 'Person' },
   ],
   tasks: [{
     title: String,
-    id: { type: Schema.Types.ObjectId, ref: 'Task' },
+    taskId: { type: Schema.Types.ObjectId, ref: 'Task' },
   }],
 }, {
   toObject: { virtuals: true },

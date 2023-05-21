@@ -7,7 +7,7 @@ export async function createTask(taskFields) {
   task.tags = taskFields.tags || [];
   task.dueDate = taskFields.dueDate || null;
   task.associatedCompany = taskFields.associatedCompany || null;
-  task.associatedTask = taskFields.associatedTask || null;
+  task.associatedPerson = taskFields.associatedPerson || null;
 
   try {
     const savedTask = await task.save();

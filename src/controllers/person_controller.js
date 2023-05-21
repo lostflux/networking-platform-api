@@ -4,7 +4,6 @@ import Company from '../models/company_model';
 export async function createPerson(personFields) {
   const person = new Person();
   person.name = personFields.name;
-  person.website = personFields.website || '';
   person.linkedin = personFields.linkedin || '';
   person.description = personFields.description || '';
   person.location = personFields.location || '';
@@ -12,12 +11,14 @@ export async function createPerson(personFields) {
   person.tags = personFields.tags || [];
   person.tasks = personFields.tasks || [];
   person.associatedCompany = personFields.associatedCompany || null;
-
-  if (person.associatedCompany) {
-    await addToAssociatedCompany(person.associatedCompany, person);
-  }
+  person.title = personFields.title || '';
+  person.email = personFields.email || '';
 
   try {
+    await person.validate();
+    if (person.associatedCompany) {
+      await addToAssociatedCompany(person.associatedCompany, person);
+    }
     const savedPerson = await person.save();
     return savedPerson;
   } catch (error) {
@@ -59,7 +60,7 @@ export async function deletePerson(id) {
   try {
     const person = await Person.findById(id);
     if (person.associatedCompany) {
-      await deleteFromExAssociatedCompany(person.associatedCompany, person);
+      await deleteFromExAssociatedCompany(person);
     }
     return Person.deleteOne({ _id: person._id });
   } catch (error) {
@@ -75,6 +76,7 @@ export async function updatePerson(id, personFields) {
     } = personFields;
     if (name) {
       person.name = name;
+      await person.validate();
     }
     if (title) {
       person.website = title;
@@ -93,7 +95,7 @@ export async function updatePerson(id, personFields) {
     }
     if (associatedCompany) {
       if (person.associatedCompany) {
-        await deleteFromExAssociatedCompany(person.associatedCompany, person);
+        await deleteFromExAssociatedCompany(person);
       }
       await addToAssociatedCompany(associatedCompany, person);
       person.associatedCompany = associatedCompany;
@@ -117,17 +119,22 @@ async function addToAssociatedCompany(companyId, person) {
       throw new Error('unable to find company');
     }
     company.associatedPeople.push(person.id);
-    return company.save();
+    const savedCompany = await company.save();
+    return savedCompany;
   } catch (error) {
     throw new Error(`update associated company error: ${error}`);
   }
 }
 
-async function deleteFromExAssociatedCompany(companyId, person) {
+async function deleteFromExAssociatedCompany(person) {
   try {
-    const company = await Company.findById(companyId);
+    const company = await Company.findById(person.associatedCompany);
+    if (!company) {
+      throw new Error('unable to find company');
+    }
     company.associatedPeople.pull(person.id);
-    return company.save();
+    const savedCompany = await company.save();
+    return savedCompany;
   } catch (error) {
     throw new Error(`update associated company error: ${error}`);
   }

@@ -94,7 +94,7 @@ export async function updateCompany(id, companyFields) {
       company.notes = notes;
     }
     if (tasks) {
-      company.notes = tasks;
+      company.tasks = tasks;
     }
     return company.save();
   } catch (error) {

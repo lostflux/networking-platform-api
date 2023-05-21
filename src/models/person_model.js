@@ -11,10 +11,10 @@ const PersonSchema = new Schema({
   description: String,
   location: String,
   associatedCompany: { type: Schema.Types.ObjectId, ref: 'Company' },
-  notes: [{
+  notes: [new Schema({
     title: String,
-    id: { type: Schema.Types.ObjectId, ref: 'Note' },
-  }],
+    noteId: { type: Schema.Types.ObjectId, ref: 'Note' },
+  }, { _id: false })],
   tags: [String],
   tasks: [{
     title: String,

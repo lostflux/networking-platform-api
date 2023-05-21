@@ -12,7 +12,7 @@ const NoteSchema = new Schema({
 }, {
   toObject: { virtuals: true },
   toJSON: { virtuals: true },
-});
+}, { _id: false });
 
 NoteSchema.index({ name: 'text', content: 'text', tags: 'text' });
 

@@ -143,7 +143,7 @@ router.post('/notes', async (req, res) => {
   const personFields = req.body;
 
   try {
-    const result = await Note.createPerson(personFields);
+    const result = await Note.createNote(personFields);
     return res.json(result);
   } catch (error) {
     return res.status(404).json({ error: error.message });
@@ -186,7 +186,7 @@ router.put('/notes/:id', async (req, res) => {
   const noteFields = req.body;
 
   try {
-    const result = await Note.updateCompany(noteId, noteFields);
+    const result = await Note.updateNote(noteId, noteFields);
     return res.json(result);
   } catch (error) {
     return res.status(404).json({ error: error.message });
