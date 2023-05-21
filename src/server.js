@@ -2,6 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import path from 'path';
 import morgan from 'morgan';
+import mongoose from 'mongoose';
+import apiRoutes from './router';
 
 // initialize
 const app = express();
@@ -29,13 +31,16 @@ app.use(express.json()); // To parse the incoming requests with JSON payloads
 
 // default index route
 app.get('/', (req, res) => {
-  res.send('Hello World from goloco!');
+  res.send('hi');
 });
 
 // START THE SERVER
 // =============================================================================
 async function startServer() {
   try {
+    const mongoURI = process.env.MONGODB_URI || 'mongodb://0.0.0.0:27017/api';
+    await mongoose.connect(mongoURI);
+    console.log(`Mongoose connected to: ${mongoURI}`);
     const port = process.env.PORT || 9090;
     app.listen(port);
 
@@ -44,5 +49,7 @@ async function startServer() {
     console.error(error);
   }
 }
+
+app.use('/api', apiRoutes);
 
 startServer();
