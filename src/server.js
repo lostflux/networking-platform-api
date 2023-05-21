@@ -38,7 +38,7 @@ app.get('/', (req, res) => {
 // =============================================================================
 async function startServer() {
   try {
-    const mongoURI = process.env.MONGODB_URI || 'mongodb://0.0.0.0:27017/postAPI';
+    const mongoURI = process.env.MONGODB_URI || 'mongodb://0.0.0.0:27017/api';
     await mongoose.connect(mongoURI);
     console.log(`Mongoose connected to: ${mongoURI}`);
     const port = process.env.PORT || 9090;

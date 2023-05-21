@@ -16,6 +16,6 @@ const CompanySchema = new Schema({
 
 CompanySchema.index({ name: 'text', tags: 'text' });
 
-const CompanyModel = mongoose.model('Companies', CompanySchema);
+const CompanyModel = mongoose.model('Company', CompanySchema);
 
 export default CompanyModel;

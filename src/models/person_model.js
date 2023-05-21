@@ -1,9 +1,9 @@
 import mongoose, { Schema } from 'mongoose';
 
-const PeopleSchema = new Schema({
+const PersonSchema = new Schema({
   name: String,
   title: String,
-  website: String,
+  email: String,
   linkedin: String,
   description: String,
   tags: [String],
@@ -13,8 +13,8 @@ const PeopleSchema = new Schema({
   toJSON: { virtuals: true },
 });
 
-PeopleSchema.index({ name: 'text', title: 'text', tags: 'text' });
+PersonSchema.index({ name: 'text', title: 'text', tags: 'text' });
 
-const PeopleModel = mongoose.model('People', PeopleSchema);
+const PersonModel = mongoose.model('person', PersonSchema);
 
-export default PeopleModel;
+export default PersonModel;
