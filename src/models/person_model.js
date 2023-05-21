@@ -10,9 +10,16 @@ const PersonSchema = new Schema({
   linkedin: String,
   description: String,
   location: String,
-  associatedCompany: [{ type: Schema.Types.ObjectId, ref: 'Company' }],
-  notes: [Map],
+  associatedCompany: { type: Schema.Types.ObjectId, ref: 'Company' },
+  notes: [{
+    title: String,
+    id: { type: Schema.Types.ObjectId, ref: 'Note' },
+  }],
   tags: [String],
+  tasks: [{
+    title: String,
+    id: { type: Schema.Types.ObjectId, ref: 'Task' },
+  }],
 }, {
   toObject: { virtuals: true },
   toJSON: { virtuals: true },
@@ -20,6 +27,6 @@ const PersonSchema = new Schema({
 
 PersonSchema.index({ name: 'text', title: 'text', tags: 'text' });
 
-const PersonModel = mongoose.model('person', PersonSchema);
+const PersonModel = mongoose.model('Person', PersonSchema);
 
 export default PersonModel;

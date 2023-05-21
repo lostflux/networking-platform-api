@@ -7,7 +7,8 @@ export async function createCompany(companyFields) {
   company.linkedin = companyFields.linkedin || '';
   company.description = companyFields.description || '';
   company.tags = companyFields.tags || [];
-  company.notes = companyFields.location || '';
+  company.notes = companyFields.location || [];
+  company.tasks = companyFields.tags || [];
   company.associatedPeople = companyFields.associatedPeople || [];
 
   try {
