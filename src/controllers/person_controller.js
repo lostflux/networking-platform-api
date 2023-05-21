@@ -10,7 +10,7 @@ export async function createPerson(personFields) {
   person.notes = personFields.notes || [];
   person.tags = personFields.tags || [];
   person.tasks = personFields.tags || [];
-  person.associatedCompany = personFields.associatedCompany;
+  person.associatedCompany = personFields.associatedCompany || '';
 
   try {
     const savedPerson = await person.save();
@@ -31,7 +31,7 @@ export async function getPeople() {
 
 export async function findPeople(query) {
   try {
-    const searchedPeople = await findpeople.find({ $text: { $search: query } }, 'name title email tags associatedCompany');
+    const searchedPeople = await Person.find({ $text: { $search: query } }, 'name title email tags associatedCompany');
     return searchedPeople;
   } catch (error) {
     throw new Error(`get person error: ${error}`);
@@ -63,7 +63,7 @@ export async function updatePerson(id, personFields) {
   try {
     const person = await Person.findById(id);
     const {
-      name, title, linkedin, email, description, tags, associatedPerson,
+      name, title, linkedin, email, description, tags, associatedPerson, notes, tasks,
     } = personFields;
     if (name) {
       person.name = name;
@@ -85,6 +85,12 @@ export async function updatePerson(id, personFields) {
     }
     if (associatedPerson) {
       person.associatedPerson = associatedPerson;
+    }
+    if (notes) {
+      company.notes = notes;
+    }
+    if (tasks) {
+      company.notes = tasks;
     }
     return person.save();
   } catch (error) {

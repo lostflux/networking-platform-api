@@ -30,7 +30,7 @@ export async function getCompanies() {
 
 export async function findCompanies(query) {
   try {
-    const searchedCompanies = await findCompanies.find({ $text: { $search: query } }, 'name website tags associatedPeople');
+    const searchedCompanies = await Company.find({ $text: { $search: query } }, 'name website tags associatedPeople');
     return searchedCompanies;
   } catch (error) {
     throw new Error(`get company error: ${error}`);
@@ -62,7 +62,7 @@ export async function updateCompany(id, companyFields) {
   try {
     const company = await Company.findById(id);
     const {
-      name, website, linkedin, description, tags, associatedPeople,
+      name, website, linkedin, description, tags, associatedPeople, notes, tasks,
     } = companyFields;
     if (name) {
       company.name = name;
@@ -81,6 +81,12 @@ export async function updateCompany(id, companyFields) {
     }
     if (associatedPeople) {
       company.associatedPeople = associatedPeople;
+    }
+    if (notes) {
+      company.notes = notes;
+    }
+    if (tasks) {
+      company.notes = tasks;
     }
     return company.save();
   } catch (error) {

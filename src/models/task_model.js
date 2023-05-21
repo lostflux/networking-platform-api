@@ -1,11 +1,11 @@
 import mongoose, { Schema } from 'mongoose';
 
 const TaskSchema = new Schema({
-  Title: {
+  title: {
     type: String,
     required: true,
   },
-  content: String,
+  description: String,
   tags: [String],
   dueDate: Date,
   associatedCompany: { type: Schema.Types.ObjectId, ref: 'Company' },
