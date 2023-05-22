@@ -6,6 +6,7 @@ export async function createCompany(companyFields) {
   company.name = companyFields.name;
   company.website = companyFields.website || '';
   company.linkedin = companyFields.linkedin || '';
+  company.location = companyFields.location || '';
   company.description = companyFields.description || '';
   company.tags = companyFields.tags || [];
   company.notes = companyFields.notes || [];
@@ -70,7 +71,7 @@ export async function updateCompany(id, companyFields) {
   try {
     const company = await Company.findById(id);
     const {
-      name, website, linkedin, description, tags, associatedPeople, notes, tasks,
+      name, website, linkedin, description, location, tags, associatedPeople, notes, tasks,
     } = companyFields;
     if (name) {
       company.name = name;
@@ -80,6 +81,9 @@ export async function updateCompany(id, companyFields) {
     }
     if (linkedin) {
       company.linkedin = linkedin;
+    }
+    if (location) {
+      company.location = location;
     }
     if (description) {
       company.description = description;

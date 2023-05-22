@@ -17,10 +17,10 @@ const CompanySchema = new Schema({
   associatedPeople: [
     { type: Schema.Types.ObjectId, ref: 'Person' },
   ],
-  tasks: [{
+  tasks: [new Schema({
     title: String,
-    taskId: { type: Schema.Types.ObjectId, ref: 'Task' },
-  }],
+    taskId: { type: Schema.Types.ObjectId, ref: 'Note' },
+  }, { _id: false })],
 }, {
   toObject: { virtuals: true },
   toJSON: { virtuals: true },

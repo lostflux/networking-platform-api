@@ -80,7 +80,6 @@ export async function updateNote(id, noteFields) {
     } = noteFields;
     if (title) {
       note.title = title;
-      await note.validate();
     }
     if (content) {
       note.content = content;
@@ -89,6 +88,7 @@ export async function updateNote(id, noteFields) {
       note.tags = tags;
     }
     if (associatedPerson) {
+      await note.validate();
       await deleteFromExAssociatedCompany(note);
       await deleteFromExAssociatedPerson(note);
       await addToAssociatedPerson(associatedPerson, associatedCompany, note);

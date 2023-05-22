@@ -2,6 +2,7 @@ import { Router } from 'express';
 import * as Company from './controllers/company_controller';
 import * as Person from './controllers/person_controller';
 import * as Note from './controllers/note_controller';
+import * as Task from './controllers/task_controller';
 
 const router = Router();
 
@@ -140,10 +141,10 @@ router.delete('/people/:id', async (req, res) => {
 });
 
 router.post('/notes', async (req, res) => {
-  const personFields = req.body;
+  const noteFields = req.body;
 
   try {
-    const result = await Note.createNote(personFields);
+    const result = await Note.createNote(noteFields);
     return res.json(result);
   } catch (error) {
     return res.status(404).json({ error: error.message });
@@ -198,6 +199,71 @@ router.delete('/notes/:id', async (req, res) => {
 
   try {
     const result = await Note.deleteNote(noteId);
+    return res.json(result);
+  } catch (error) {
+    return res.status(404).json({ error: error.message });
+  }
+});
+
+router.post('/tasks', async (req, res) => {
+  const taskFields = req.body;
+
+  try {
+    const result = await Task.createTask(taskFields);
+    return res.json(result);
+  } catch (error) {
+    return res.status(404).json({ error: error.message });
+  }
+});
+
+router.get('/tasks', async (req, res) => {
+  try {
+    const result = await Task.getTasks();
+    return res.json(result);
+  } catch (error) {
+    return res.status(404).json({ error: error.message });
+  }
+});
+
+router.get('/tasks/search', async (req, res) => {
+  const { q: searchTerm } = req.query;
+
+  try {
+    const result = await Task.findTasks(searchTerm);
+    return res.json(result);
+  } catch (error) {
+    return res.status(404).json({ error: error.message });
+  }
+});
+
+router.get('/tasks/:id', async (req, res) => {
+  const taskId = req.params.id;
+
+  try {
+    const result = await Task.getTask(taskId);
+    return res.json(result);
+  } catch (error) {
+    return res.status(404).json({ error: error.message });
+  }
+});
+
+router.put('/tasks/:id', async (req, res) => {
+  const taskId = req.params.id;
+  const taskFields = req.body;
+
+  try {
+    const result = await Task.updateTask(taskId, taskFields);
+    return res.json(result);
+  } catch (error) {
+    return res.status(404).json({ error: error.message });
+  }
+});
+
+router.delete('/tasks/:id', async (req, res) => {
+  const taskId = req.params.id;
+
+  try {
+    const result = await Task.deleteTask(taskId);
     return res.json(result);
   } catch (error) {
     return res.status(404).json({ error: error.message });

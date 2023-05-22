@@ -16,10 +16,10 @@ const PersonSchema = new Schema({
     noteId: { type: Schema.Types.ObjectId, ref: 'Note' },
   }, { _id: false })],
   tags: [String],
-  tasks: [{
+  tasks: [new Schema({
     title: String,
-    id: { type: Schema.Types.ObjectId, ref: 'Task' },
-  }],
+    taskId: { type: Schema.Types.ObjectId, ref: 'Note' },
+  }, { _id: false })],
 }, {
   toObject: { virtuals: true },
   toJSON: { virtuals: true },

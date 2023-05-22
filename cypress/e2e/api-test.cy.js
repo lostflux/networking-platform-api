@@ -3,7 +3,7 @@
 const companiesId = [];
 const peopleId = [];
 let noteId;
-let noteTitle;
+let taskId;
 
 describe('Final Project: CRUD operations', () => {
   // TESTING FOR COMPANY API
@@ -15,8 +15,11 @@ describe('Final Project: CRUD operations', () => {
       body:
       {
         name: 'Goldman Sachs',
-        webite: 'https://www.goldmansachs.com/',
+        website: 'https://www.goldmansachs.com/',
+        linkedin: 'https://www.linkedin.com/company/goldman-sachs/',
+        description: 'I love big banks',
         location: 'New York City, NY',
+        tags: ['finance', 'banking', 'investment'],
       },
     }).then((response) => {
       expect(response.status).to.eq(200);
@@ -30,8 +33,10 @@ describe('Final Project: CRUD operations', () => {
       body:
       {
         name: 'Google',
-        webite: 'https://www.google.com/',
+        website: 'https://www.google.com/',
         description: 'I love big tech',
+        location: 'Mountain View, CA',
+        tags: ['tech', 'search', 'advertising'],
       },
     }).then((response) => {
       expect(response.status).to.eq(200);
@@ -58,8 +63,22 @@ describe('Final Project: CRUD operations', () => {
       url: '/api/companies',
       body:
       {
-        webite: 'https://www.goldmansachs.com/',
+        website: 'https://www.goldmansachs.com/',
         location: 'New York City, NY',
+      },
+    }).then((response) => {
+      expect(response.status).to.eq(404);
+    });
+  });
+  it('user creates a bad company with wrong type for title', () => {
+    cy.request({
+      failOnStatusCode: false,
+      method: 'POST',
+      // headers: { authorization: token },
+      url: '/api/companies',
+      body:
+      {
+        title: 1234,
       },
     }).then((response) => {
       expect(response.status).to.eq(404);
@@ -73,6 +92,11 @@ describe('Final Project: CRUD operations', () => {
     }).then((response) => {
       expect(response.status).to.eq(200);
       expect(response.body.name).to.eq('Goldman Sachs');
+      expect(response.body.website).to.eq('https://www.goldmansachs.com/');
+      expect(response.body.linkedin).to.eq('https://www.linkedin.com/company/goldman-sachs/');
+      expect(response.body.description).to.eq('I love big banks');
+      expect(response.body.location).to.eq('New York City, NY');
+      expect(response.body.tags).to.deep.eq(['finance', 'banking', 'investment']);
     });
   });
   it('user retrieves a bad company id, expecting failure code 404', () => {
@@ -130,6 +154,8 @@ describe('Final Project: CRUD operations', () => {
         name: 'Jason Doh',
         location: 'Menlo Park, CA',
         title: 'Software Engineer',
+        description: 'I am a software engineer',
+        linkedin: 'https://www.linkedin.com/in/jasondoh/',
         associatedCompany: companiesId[1],
       },
     }).then((response) => {
@@ -202,6 +228,10 @@ describe('Final Project: CRUD operations', () => {
     }).then((response) => {
       expect(response.status).to.eq(200);
       expect(response.body.name).to.eq('Jason Doh');
+      expect(response.body.location).to.eq('Menlo Park, CA');
+      expect(response.body.title).to.eq('Software Engineer');
+      expect(response.body.description).to.eq('I am a software engineer');
+      expect(response.body.linkedin).to.eq('https://www.linkedin.com/in/jasondoh/');
     });
   });
   it('user retrieves a bad person id, expecting failure code 404', () => {
@@ -315,7 +345,6 @@ describe('Final Project: CRUD operations', () => {
     }).then((response) => {
       expect(response.status).to.eq(200);
       noteId = response.body.id ?? response.body._id;
-      noteTitle = response.body.title;
     });
   });
   it('user creates a bad note, no title', () => {
@@ -476,6 +505,59 @@ describe('Final Project: CRUD operations', () => {
       url: `/api/notes/${noteId}`,
     }).then((res) => {
       expect(res.status).to.eq(404);
+    });
+  });
+
+  // TESTING FOR TASKS API
+  it('user creates a tasks', () => {
+    cy.request({
+      method: 'POST',
+      // headers: { authorization: token },
+      url: '/api/tasks',
+      body:
+      {
+        title: 'Follow Up Networking Email with Jason Doh',
+        description: 'This is a task about Jason Doh',
+        tags: ['Networking', 'Follow Up'],
+        dueDate: '2023-05-22T00:00:00.000Z',
+        associatedPerson: peopleId[0],
+      },
+    }).then((response) => {
+      expect(response.status).to.eq(200);
+      taskId = response.body.id ?? response.body._id;
+    });
+    cy.request({
+      method: 'GET',
+      // headers: { authorization: token },
+      url: `/api/people/${peopleId[0]}`,
+    }).then((response) => {
+      expect(response.status).to.eq(200);
+      expect(response.body.tasks).to.lengthOf(1);
+      expect(response.body.tasks[0].taskId).to.equal(taskId);
+    });
+    cy.request({
+      method: 'GET',
+      // headers: { authorization: token },
+      url: `/api/companies/${companiesId[2]}`,
+    }).then((response) => {
+      expect(response.status).to.eq(200);
+      expect(response.body.tasks).to.lengthOf(1);
+      expect(response.body.tasks[0].taskId).to.equal(taskId);
+    });
+  });
+  it('user retrieves a task', () => {
+    cy.request({
+      method: 'GET',
+      // headers: { authorization: token },
+      url: `/api/tasks/${taskId}`,
+    }).then((response) => {
+      expect(response.status).to.eq(200);
+      expect(response.body.title).to.eq('Follow Up Networking Email with Jason Doh');
+      expect(response.body.description).to.eq('This is a task about Jason Doh');
+      expect(response.body.tags).to.eql(['Networking', 'Follow Up']);
+      expect(response.body.dueDate).to.eq('2023-05-22T00:00:00.000Z');
+      expect(response.body.associatedPerson).to.eq(peopleId[0]);
+      expect(response.body.associatedCompany).to.eq(companiesId[2]);
     });
   });
 });
