@@ -4,6 +4,12 @@ const companiesId = [];
 const peopleId = [];
 let noteId;
 let taskId;
+let deadNoteId;
+let deadTaskId;
+
+// Goldman is companiesId[0], Google is companiesId[1], Microsoft is companiesId[2]
+// Jason Doh is peopleId[0], after updating he is assocated with Microsoft companiesId[2] and not Google
+// Brian is peopleId[1], he is associated with Google companyId[1]
 
 describe('Final Project: CRUD operations', () => {
   // TESTING FOR COMPANY API
@@ -422,7 +428,7 @@ describe('Final Project: CRUD operations', () => {
       url: `/api/companies/${companiesId[1]}`,
     }).then((response) => {
       expect(response.status).to.eq(200);
-      expect(response.body.notes).to.lengthOf(1);
+      expect(response.body.notes).to.include(noteId);
     });
     cy.request({
       method: 'GET',
@@ -430,7 +436,7 @@ describe('Final Project: CRUD operations', () => {
       url: `/api/companies/${companiesId[2]}`,
     }).then((response) => {
       expect(response.status).to.eq(200);
-      expect(response.body.notes).to.lengthOf(0);
+      expect(response.body.notes).to.not.include(noteId);
     });
     cy.request({
       method: 'GET',
@@ -438,7 +444,7 @@ describe('Final Project: CRUD operations', () => {
       url: `/api/people/${peopleId[1]}`,
     }).then((response) => {
       expect(response.status).to.eq(200);
-      expect(response.body.notes).to.lengthOf(1);
+      expect(response.body.notes).to.include(noteId);
     });
     cy.request({
       method: 'GET',
@@ -446,10 +452,58 @@ describe('Final Project: CRUD operations', () => {
       url: `/api/people/${peopleId[0]}`,
     }).then((response) => {
       expect(response.status).to.eq(200);
-      expect(response.body.notes).to.lengthOf(0);
+      expect(response.body.notes).to.not.include(noteId);
     });
   });
-  it('user updates note with new company, bad because tied to person', () => {
+  it('user updates bad notes with new person, expected 404 because company person mismatch', () => {
+    cy.request({
+      failOnStatusCode: false,
+      method: 'PUT',
+      // headers: { authorization: token },
+      url: `/api/notes/${taskId}`,
+      body:
+      {
+        title: 'Bad Call Note for Brian Dong - 5/21/2023',
+        associatedCompany: companiesId[2],
+        associatedPerson: peopleId[1],
+      },
+    }).then((response) => {
+      expect(response.status).to.eq(404);
+    });
+    cy.request({
+      method: 'GET',
+      // headers: { authorization: token },
+      url: `/api/companies/${companiesId[1]}`,
+    }).then((response) => {
+      expect(response.status).to.eq(200);
+      expect(response.body.notes).to.include(noteId);
+    });
+    cy.request({
+      method: 'GET',
+      // headers: { authorization: token },
+      url: `/api/companies/${companiesId[2]}`,
+    }).then((response) => {
+      expect(response.status).to.eq(200);
+      expect(response.body.notes).to.not.include(noteId);
+    });
+    cy.request({
+      method: 'GET',
+      // headers: { authorization: token },
+      url: `/api/people/${peopleId[1]}`,
+    }).then((response) => {
+      expect(response.status).to.eq(200);
+      expect(response.body.notes).to.include(noteId);
+    });
+    cy.request({
+      method: 'GET',
+      // headers: { authorization: token },
+      url: `/api/people/${peopleId[0]}`,
+    }).then((response) => {
+      expect(response.status).to.eq(200);
+      expect(response.body.notes).to.not.include(noteId);
+    });
+  });
+  it('user updates note with new company, expected 404 tied to person', () => {
     cy.request({
       failOnStatusCode: false,
       method: 'PUT',
@@ -468,7 +522,7 @@ describe('Final Project: CRUD operations', () => {
       url: `/api/companies/${companiesId[1]}`,
     }).then((response) => {
       expect(response.status).to.eq(200);
-      expect(response.body.notes).to.lengthOf(1);
+      expect(response.body.notes).to.include(noteId);
     });
     cy.request({
       method: 'GET',
@@ -476,7 +530,7 @@ describe('Final Project: CRUD operations', () => {
       url: `/api/companies/${companiesId[2]}`,
     }).then((response) => {
       expect(response.status).to.eq(200);
-      expect(response.body.notes).to.lengthOf(0);
+      expect(response.body.notes).to.not.include(noteId);
     });
   });
   it('user deletes note', () => {
@@ -494,7 +548,15 @@ describe('Final Project: CRUD operations', () => {
       url: `/api/companies/${companiesId[1]}`,
     }).then((response) => {
       expect(response.status).to.eq(200);
-      expect(response.body.notes).to.lengthOf(0);
+      expect(response.body.notes).to.not.include(noteId);
+    });
+    cy.request({
+      method: 'GET',
+      // headers: { authorization: token },
+      url: `/api/people/${peopleId[1]}`,
+    }).then((response) => {
+      expect(response.status).to.eq(200);
+      expect(response.body.notes).to.not.include(noteId);
     });
   });
   it('user retrieves deleted note, expects to error code 404', () => {
@@ -532,8 +594,7 @@ describe('Final Project: CRUD operations', () => {
       url: `/api/people/${peopleId[0]}`,
     }).then((response) => {
       expect(response.status).to.eq(200);
-      expect(response.body.tasks).to.lengthOf(1);
-      expect(response.body.tasks[0].taskId).to.equal(taskId);
+      expect(response.body.tasks).to.include(taskId);
     });
     cy.request({
       method: 'GET',
@@ -541,8 +602,7 @@ describe('Final Project: CRUD operations', () => {
       url: `/api/companies/${companiesId[2]}`,
     }).then((response) => {
       expect(response.status).to.eq(200);
-      expect(response.body.tasks).to.lengthOf(1);
-      expect(response.body.tasks[0].taskId).to.equal(taskId);
+      expect(response.body.tasks).to.include(taskId);
     });
   });
   it('user retrieves a task', () => {
@@ -558,6 +618,332 @@ describe('Final Project: CRUD operations', () => {
       expect(response.body.dueDate).to.eq('2023-05-22T00:00:00.000Z');
       expect(response.body.associatedPerson).to.eq(peopleId[0]);
       expect(response.body.associatedCompany).to.eq(companiesId[2]);
+    });
+  });
+  it('user creates a bad task, expected error 404 because no title', () => {
+    cy.request({
+      failOnStatusCode: false,
+      method: 'POST',
+      // headers: { authorization: token },
+      url: '/api/tasks',
+      body:
+      {
+        description: 'This is a task about Jason Doh',
+        tags: ['Networking', 'Follow Up'],
+        dueDate: '2023-05-22T00:00:00.000Z',
+        associatedPerson: peopleId[0],
+      },
+    }).then((response) => {
+      expect(response.status).to.eq(404);
+    });
+    cy.request({
+      method: 'GET',
+      // headers: { authorization: token },
+      url: `/api/people/${peopleId[0]}`,
+    }).then((response) => {
+      expect(response.status).to.eq(200);
+      expect(response.body.tasks).to.length(1);
+    });
+    cy.request({
+      method: 'GET',
+      // headers: { authorization: token },
+      url: `/api/companies/${companiesId[2]}`,
+    }).then((response) => {
+      expect(response.status).to.eq(200);
+      expect(response.body.tasks).to.length(1);
+    });
+  });
+  it('user creates a bad task, expected error 404 with wrong associationID', () => {
+    cy.request({
+      failOnStatusCode: false,
+      method: 'POST',
+      // headers: { authorization: token },
+      url: '/api/tasks',
+      body:
+      {
+        title: 'Hi I\'m a task',
+        associatedPerson: 'meow',
+      },
+    }).then((response) => {
+      expect(response.status).to.eq(404);
+    });
+    cy.request({
+      failOnStatusCode: false,
+      method: 'POST',
+      // headers: { authorization: token },
+      url: '/api/tasks',
+      body:
+      {
+        title: 'Hi I\'m also a bad task',
+        associatedCompany: 'meow',
+      },
+    }).then((response) => {
+      expect(response.status).to.eq(404);
+    });
+  });
+  it('user updates task with new person', () => {
+    cy.request({
+      method: 'PUT',
+      // headers: { authorization: token },
+      url: `/api/tasks/${taskId}`,
+      body:
+      {
+        title: 'This is an updated task for Brian Dong',
+        description: 'Call Brian',
+        associatedPerson: peopleId[1],
+      },
+    }).then((response) => {
+      expect(response.status).to.eq(200);
+      expect(response.body.associatedPerson).to.eq(peopleId[1]);
+      expect(response.body.associatedCompany).to.eq(companiesId[1]);
+    });
+    cy.request({
+      method: 'GET',
+      // headers: { authorization: token },
+      url: `/api/companies/${companiesId[1]}`,
+    }).then((response) => {
+      expect(response.status).to.eq(200);
+      expect(response.body.tasks).to.include(taskId);
+    });
+    cy.request({
+      method: 'GET',
+      // headers: { authorization: token },
+      url: `/api/companies/${companiesId[2]}`,
+    }).then((response) => {
+      expect(response.status).to.eq(200);
+      expect(response.body.tasks).to.not.include(taskId);
+    });
+    cy.request({
+      method: 'GET',
+      // headers: { authorization: token },
+      url: `/api/people/${peopleId[1]}`,
+    }).then((response) => {
+      expect(response.status).to.eq(200);
+      expect(response.body.tasks).to.include(taskId);
+    });
+    cy.request({
+      method: 'GET',
+      // headers: { authorization: token },
+      url: `/api/people/${peopleId[0]}`,
+    }).then((response) => {
+      expect(response.status).to.eq(200);
+      expect(response.body.tasks).to.not.include(taskId);
+    });
+  });
+  it('user updates bad task with new person, expected 404 because company person mismatch', () => {
+    cy.request({
+      failOnStatusCode: false,
+      method: 'PUT',
+      // headers: { authorization: token },
+      url: `/api/tasks/${taskId}`,
+      body:
+      {
+        title: 'This is an bad updated task for Brian Dong',
+        description: 'Call Brian',
+        associatedCompany: companiesId[2],
+        associatedPerson: peopleId[1],
+      },
+    }).then((response) => {
+      expect(response.status).to.eq(404);
+    });
+    cy.request({
+      method: 'GET',
+      // headers: { authorization: token },
+      url: `/api/companies/${companiesId[1]}`,
+    }).then((response) => {
+      expect(response.status).to.eq(200);
+      expect(response.body.tasks).to.include(taskId);
+    });
+    cy.request({
+      method: 'GET',
+      // headers: { authorization: token },
+      url: `/api/companies/${companiesId[2]}`,
+    }).then((response) => {
+      expect(response.status).to.eq(200);
+      expect(response.body.tasks).to.not.include(taskId);
+    });
+    cy.request({
+      method: 'GET',
+      // headers: { authorization: token },
+      url: `/api/people/${peopleId[1]}`,
+    }).then((response) => {
+      expect(response.status).to.eq(200);
+      expect(response.body.tasks).to.include(taskId);
+    });
+    cy.request({
+      method: 'GET',
+      // headers: { authorization: token },
+      url: `/api/people/${peopleId[0]}`,
+    }).then((response) => {
+      expect(response.status).to.eq(200);
+      expect(response.body.tasks).to.not.include(taskId);
+    });
+  });
+  it('user updates task with new company, expected 404 because tied to person', () => {
+    cy.request({
+      failOnStatusCode: false,
+      method: 'PUT',
+      // headers: { authorization: token },
+      url: `/api/tasks/${taskId}`,
+      body:
+      {
+        associatedCompany: companiesId[2],
+      },
+    }).then((response) => {
+      expect(response.status).to.eq(404);
+    });
+    cy.request({
+      method: 'GET',
+      // headers: { authorization: token },
+      url: `/api/companies/${companiesId[1]}`,
+    }).then((response) => {
+      expect(response.status).to.eq(200);
+      expect(response.body.tasks).to.include(taskId);
+    });
+    cy.request({
+      method: 'GET',
+      // headers: { authorization: token },
+      url: `/api/companies/${companiesId[2]}`,
+    }).then((response) => {
+      expect(response.status).to.eq(200);
+      expect(response.body.tasks).to.not.include(taskId);
+    });
+  });
+  it('user deletes task', () => {
+    cy.request({
+      failOnStatusCode: false,
+      method: 'DELETE',
+      // headers: { authorization: token },
+      url: `/api/tasks/${taskId}`,
+    }).then((response) => {
+      expect(response.status).to.eq(200);
+    });
+    cy.request({
+      method: 'GET',
+      // headers: { authorization: token },
+      url: `/api/companies/${companiesId[1]}`,
+    }).then((response) => {
+      expect(response.status).to.eq(200);
+      expect(response.body.tasks).to.not.include(taskId);
+    });
+    cy.request({
+      method: 'GET',
+      // headers: { authorization: token },
+      url: `/api/people/${peopleId[1]}`,
+    }).then((response) => {
+      expect(response.status).to.eq(200);
+      expect(response.body.tasks).to.not.include(taskId);
+    });
+  });
+  it('user retrieves deleted task, expects to error code 404', () => {
+    cy.request({
+      failOnStatusCode: false,
+      method: 'GET',
+      // headers: { authorization: token },
+      url: `/api/tasks/${taskId}`,
+    }).then((res) => {
+      expect(res.status).to.eq(404);
+    });
+  });
+
+  // DELETION TESTS
+  it('user deletes company, expected for person and people associated tasks/notes to remain, only company associated notes/tasks to delete', () => {
+    cy.request({
+      method: 'POST',
+      // headers: { authorization: token },
+      url: '/api/tasks',
+      body:
+      {
+        title: 'Follow Up x3 Networking Email with Jason Doh',
+        associatedPerson: peopleId[0],
+      },
+    }).then((response) => {
+      expect(response.status).to.eq(200);
+      taskId = response.body.id ?? response.body._id;
+    });
+
+    cy.request({
+      method: 'POST',
+      // headers: { authorization: token },
+      url: '/api/tasks',
+      body:
+      {
+        title: 'Recruit for Microsoft',
+        associatedCompany: companiesId[2],
+      },
+    }).then((response) => {
+      expect(response.status).to.eq(200);
+      deadTaskId = response.body.id ?? response.body._id;
+    });
+
+    cy.request({
+      method: 'POST',
+      // headers: { authorization: token },
+      url: '/api/notes',
+      body:
+      {
+        title: 'Note about Jason Doh at Microsoft',
+        associatedPerson: peopleId[0],
+      },
+    }).then((response) => {
+      expect(response.status).to.eq(200);
+      noteId = response.body.id ?? response.body._id;
+    });
+
+    cy.request({
+      method: 'POST',
+      // headers: { authorization: token },
+      url: '/api/notes',
+      body:
+      {
+        title: 'Note about Microsoft',
+        associatedCompany: companiesId[2],
+      },
+    }).then((response) => {
+      expect(response.status).to.eq(200);
+      deadNoteId = response.body.id ?? response.body._id;
+    });
+
+    cy.request({
+      method: 'DELETE',
+      // headers: { authorization: token },
+      url: `/api/companies/${companiesId[2]}`,
+    }).then((response) => {
+      expect(response.status).to.eq(200);
+    });
+
+    cy.request({
+      failOnStatusCode: false,
+      method: 'GET',
+      // headers: { authorization: token },
+      url: `/api/notes/${deadNoteId}`,
+    }).then((response) => {
+      expect(response.status).to.eq(404);
+    });
+
+    cy.request({
+      failOnStatusCode: false,
+      method: 'GET',
+      // headers: { authorization: token },
+      url: `/api/tasks/${deadTaskId}`,
+    }).then((response) => {
+      expect(response.status).to.eq(404);
+    });
+
+    cy.request({
+      method: 'GET',
+      // headers: { authorization: token },
+      url: `/api/notes/${noteId}`,
+    }).then((response) => {
+      expect(response.status).to.eq(200);
+    });
+
+    cy.request({
+      method: 'GET',
+      // headers: { authorization: token },
+      url: `/api/tasks/${taskId}`,
+    }).then((response) => {
+      expect(response.status).to.eq(200);
     });
   });
 });

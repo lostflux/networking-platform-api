@@ -11,15 +11,9 @@ const PersonSchema = new Schema({
   description: String,
   location: String,
   associatedCompany: { type: Schema.Types.ObjectId, ref: 'Company' },
-  notes: [new Schema({
-    title: String,
-    noteId: { type: Schema.Types.ObjectId, ref: 'Note' },
-  }, { _id: false })],
+  notes: [{ type: Schema.Types.ObjectId, ref: 'Note' }],
   tags: [String],
-  tasks: [new Schema({
-    title: String,
-    taskId: { type: Schema.Types.ObjectId, ref: 'Note' },
-  }, { _id: false })],
+  tasks: [{ type: Schema.Types.ObjectId, ref: 'Task' }],
 }, {
   toObject: { virtuals: true },
   toJSON: { virtuals: true },

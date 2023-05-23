@@ -19,6 +19,7 @@ export async function createTask(taskFields) {
       await addToAssociatedCompany(task.associatedCompany, task);
     }
     const savedTask = await task.save();
+
     return savedTask;
   } catch (error) {
     throw new Error(`create task error: ${error}`);
@@ -59,12 +60,13 @@ export async function deleteTask(id) {
   try {
     const task = await Task.findById(id);
     if (task.associatedPerson) {
-      await deleteFromExAssociatedPerson(task);
+      deleteFromExAssociatedPerson(task);
     }
     if (task.associatedCompany) {
-      await deleteFromExAssociatedCompany(task);
+      deleteFromExAssociatedCompany(task);
     }
-    return Task.deleteOne({ _id: task._id });
+    const deletedTask = await Task.deleteOne({ _id: task._id });
+    return deletedTask;
   } catch (error) {
     throw new Error(`delete task error: ${error}`);
   }
@@ -88,20 +90,23 @@ export async function updateTask(id, taskFields) {
     if (tags) {
       task.tags = tags;
     }
-    if (associatedPerson) {
+    if (associatedPerson && task.associatedPerson.toString() !== associatedPerson) {
       await task.validate();
       await deleteFromExAssociatedCompany(task);
       await deleteFromExAssociatedPerson(task);
       await addToAssociatedPerson(associatedPerson, associatedCompany, task);
       task.associatedPerson = associatedPerson;
-    } else if (associatedCompany) {
-      if (task.associatedPerson && task.associatedCompany !== associatedCompany) {
+    } else if (associatedCompany && task.associatedCompany.toString() !== associatedCompany) {
+      if (task.associatedPerson) {
         throw new Error('cannot associate task to a new company if it is already associated with a person in existing company');
       }
+      await task.validate();
       await deleteFromExAssociatedCompany(task);
+      await addToAssociatedCompany(associatedCompany, task);
       task.associatedCompany = associatedCompany;
     }
-    return task.save();
+    const savedTask = await task.save();
+    return savedTask;
   } catch (error) {
     throw new Error(`update task error: ${error}`);
   }
@@ -113,7 +118,7 @@ async function addToAssociatedCompany(companyId, task) {
     if (!company) {
       throw new Error('unable to find company');
     }
-    company.tasks.push({ title: task.title, taskId: task.id });
+    company.tasks.push(task.id);
     const savedCompany = await company.save();
     return savedCompany;
   } catch (error) {
@@ -124,9 +129,7 @@ async function addToAssociatedCompany(companyId, task) {
 async function deleteFromExAssociatedCompany(task) {
   try {
     const company = await Company.findById(task.associatedCompany);
-    company.tasks = company.tasks.filter((taskInList) => {
-      return taskInList.taskId === task.id;
-    });
+    company.tasks.pull(task.id);
     const savedCompany = await company.save();
     return savedCompany;
   } catch (error) {
@@ -141,17 +144,17 @@ async function addToAssociatedPerson(personId, companyId, task) {
       throw new Error('unable to find person');
     }
     if (companyId) {
-      if (person.associatedCompany && person.associatedCompany !== companyId) {
+      if (person.associatedCompany && person.associatedCompany.toString() !== companyId) {
         throw new Error('mismatch between associated company and associated person');
       } else {
-        await addToAssociatedCompany(companyId, task);
+        addToAssociatedCompany(companyId, task);
         task.associatedCompany = companyId;
       }
     } else if (person.associatedCompany) {
-      await addToAssociatedCompany(person.associatedCompany, task);
+      addToAssociatedCompany(person.associatedCompany, task);
       task.associatedCompany = person.associatedCompany;
     }
-    person.tasks.push({ title: task.title, taskId: task.id });
+    person.tasks.push(task.id);
     const savedPerson = await person.save();
     return savedPerson;
   } catch (error) {
@@ -162,9 +165,7 @@ async function addToAssociatedPerson(personId, companyId, task) {
 async function deleteFromExAssociatedPerson(task) {
   try {
     const person = await Person.findById(task.associatedPerson);
-    person.tasks = person.tasks.filter((taskInList) => {
-      return taskInList.taskId === task.id;
-    });
+    person.tasks.pull(task.id);
     const savedPerson = await person.save();
     return savedPerson;
   } catch (error) {
