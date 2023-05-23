@@ -7,10 +7,47 @@ let noteId;
 let taskId;
 let deadNoteId;
 let deadTaskId;
+let token;
 
 // Goldman is companiesId[0], Google is companiesId[1], Microsoft is companiesId[2]
 // Jason Doh is peopleId[0], after updating he is assocated with Microsoft companiesId[2] and not Google
 // Brian is peopleId[1], he is associated with Google companyId[1]
+
+const getUniqueId = () => { return Cypress._.uniqueId(Date.now().toString()); };
+const email = `${getUniqueId()}@test.com`;
+
+describe('Authentication', () => {
+  it('user signs up with email and password', () => {
+    cy.request(
+      'POST',
+      '/api/signup',
+      { email, password: 'password' },
+    ).then((response) => {
+      expect(response.status).to.eq(200);
+      token = response.body.token;
+    });
+  });
+  it('same user signs up with email and password, expecting fail 422', () => {
+    cy.request({
+      failOnStatusCode: false,
+      method: 'POST',
+      url: '/api/signup',
+      body: { email, password: 'password' },
+    }).then((response) => {
+      expect(response.status).to.eq(422);
+    });
+  });
+  it('user signs in with email and password', () => {
+    cy.request({
+      method: 'POST',
+      url: '/api/signin',
+      body: { email, password: 'password' },
+    }).then((response) => {
+      expect(response.status).to.eq(200);
+      token = response.body.token;
+    });
+  });
+});
 
 describe('Final Project: CRUD operations', () => {
   // TESTING FOR COMPANY API
@@ -847,7 +884,7 @@ describe('Final Project: CRUD operations', () => {
     });
   });
 
-  // DELETION TESTS
+  // DELETION TESTS, HAVE TO FIX, OK TO FAIL
   it('user deletes company, expected for person and people associated tasks/notes to remain, only company associated notes/tasks to delete', () => {
     cy.request({
       method: 'POST',
