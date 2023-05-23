@@ -15,6 +15,7 @@ const PersonSchema = new Schema({
   notes: [{ type: Schema.Types.ObjectId, ref: 'Note' }],
   tags: [String],
   tasks: [{ type: Schema.Types.ObjectId, ref: 'Task' }],
+  author: { type: Schema.Types.ObjectId, ref: 'User' },
 }, {
   toObject: { virtuals: true },
   toJSON: { virtuals: true },

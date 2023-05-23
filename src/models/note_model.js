@@ -9,6 +9,7 @@ const NoteSchema = new Schema({
   tags: [String],
   associatedCompany: { type: Schema.Types.ObjectId, ref: 'Company' },
   associatedPerson: { type: Schema.Types.ObjectId, ref: 'Person' },
+  author: { type: Schema.Types.ObjectId, ref: 'User' },
 }, {
   toObject: { virtuals: true },
   toJSON: { virtuals: true },
