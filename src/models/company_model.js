@@ -8,6 +8,7 @@ const CompanySchema = new Schema({
     required: true,
   },
   website: String,
+  imageUrl: String,
   linkedin: String,
   description: String,
   location: String,

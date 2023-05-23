@@ -1,4 +1,5 @@
 /* eslint-disable no-undef */
+
 // globals
 const companiesId = [];
 const peopleId = [];
@@ -859,6 +860,7 @@ describe('Final Project: CRUD operations', () => {
       },
     }).then((response) => {
       expect(response.status).to.eq(200);
+      expect(response.body.associatedPerson).to.eq(peopleId[0]);
       taskId = response.body.id ?? response.body._id;
     });
 
@@ -873,6 +875,7 @@ describe('Final Project: CRUD operations', () => {
       },
     }).then((response) => {
       expect(response.status).to.eq(200);
+      expect(response.body.associatedCompany).to.eq(companiesId[2]);
       deadTaskId = response.body.id ?? response.body._id;
     });
 
@@ -887,6 +890,7 @@ describe('Final Project: CRUD operations', () => {
       },
     }).then((response) => {
       expect(response.status).to.eq(200);
+      expect(response.body.associatedPerson).to.eq(peopleId[0]);
       noteId = response.body.id ?? response.body._id;
     });
 
@@ -901,7 +905,10 @@ describe('Final Project: CRUD operations', () => {
       },
     }).then((response) => {
       expect(response.status).to.eq(200);
+      expect(response.body.associatedCompany).to.eq(companiesId[2]);
+      // expect(response.body.id).to.eq("MOW");
       deadNoteId = response.body.id ?? response.body._id;
+      expect(response.body.id).to.eq(deadNoteId);
     });
 
     cy.request({

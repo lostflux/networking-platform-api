@@ -6,6 +6,7 @@ const PersonSchema = new Schema({
     required: true,
   },
   title: String,
+  imageUrl: String,
   email: String,
   linkedin: String,
   description: String,
