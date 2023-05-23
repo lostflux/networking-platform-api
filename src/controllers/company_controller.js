@@ -1,11 +1,14 @@
 import Company from '../models/company_model';
 import Person from '../models/person_model';
+import Note from '../models/note_model';
+import Task from '../models/task_model';
 
 export async function createCompany(companyFields) {
   const company = new Company();
   company.name = companyFields.name;
   company.website = companyFields.website || '';
   company.linkedin = companyFields.linkedin || '';
+  company.location = companyFields.location || '';
   company.description = companyFields.description || '';
   company.tags = companyFields.tags || [];
   company.notes = companyFields.notes || [];
@@ -54,13 +57,40 @@ export async function deleteCompany(id) {
   try {
     const company = await Company.findById(id);
     if (company.associatedPeople) {
-      company.associatedPeople.forEach(async (person) => {
-        const associatedPerson = await Person.findById(person);
+      company.associatedPeople.forEach(async (personId) => {
+        const associatedPerson = await Person.findById(personId);
         associatedPerson.associatedCompany = null;
         await associatedPerson.save();
       });
     }
-    return Company.deleteOne({ _id: company._id });
+
+    if (company.notes) {
+      company.notes.forEach(async (noteId) => {
+        console.log('here');
+        const noteFound = await Note.findById(noteId);
+        console.log(noteFound.associatedPerson);
+        if (noteFound.associatedPerson) {
+          noteFound.associatedCompany = null;
+          await noteFound.save();
+        } else {
+          await Note.deleteOne({ _id: noteId });
+        }
+      });
+    }
+
+    if (company.tasks) {
+      company.tasks.forEach(async (taskId) => {
+        const taskFound = await Task.findById(taskId);
+        if (taskFound.associatedPerson) {
+          taskFound.associatedCompany = null;
+          await taskFound.save();
+        } else {
+          await Task.deleteOne({ _id: taskId });
+        }
+      });
+    }
+    const deletedCompany = await Company.deleteOne({ _id: company._id });
+    return deletedCompany;
   } catch (error) {
     throw new Error(`delete company error: ${error}`);
   }
@@ -70,7 +100,7 @@ export async function updateCompany(id, companyFields) {
   try {
     const company = await Company.findById(id);
     const {
-      name, website, linkedin, description, tags, associatedPeople, notes, tasks,
+      name, website, linkedin, description, location, tags, associatedPeople, notes, tasks,
     } = companyFields;
     if (name) {
       company.name = name;
@@ -80,6 +110,9 @@ export async function updateCompany(id, companyFields) {
     }
     if (linkedin) {
       company.linkedin = linkedin;
+    }
+    if (location) {
+      company.location = location;
     }
     if (description) {
       company.description = description;

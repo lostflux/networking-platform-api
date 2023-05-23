@@ -1,5 +1,7 @@
 import mongoose, { Schema } from 'mongoose';
 
+// ADD IMAGE URL TO COMPANY MODEL
+
 const CompanySchema = new Schema({
   name: {
     type: String,
@@ -10,17 +12,11 @@ const CompanySchema = new Schema({
   description: String,
   location: String,
   tags: [String],
-  notes: [new Schema({
-    title: String,
-    noteId: { type: Schema.Types.ObjectId, ref: 'Note' },
-  }, { _id: false })],
   associatedPeople: [
     { type: Schema.Types.ObjectId, ref: 'Person' },
   ],
-  tasks: [{
-    title: String,
-    taskId: { type: Schema.Types.ObjectId, ref: 'Task' },
-  }],
+  notes: [{ type: Schema.Types.ObjectId, ref: 'Note' }],
+  tasks: [{ type: Schema.Types.ObjectId, ref: 'Task' }],
 }, {
   toObject: { virtuals: true },
   toJSON: { virtuals: true },

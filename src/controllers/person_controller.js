@@ -1,5 +1,7 @@
 import Person from '../models/person_model';
 import Company from '../models/company_model';
+import Note from '../models/note_model';
+import Task from '../models/task_model';
 
 export async function createPerson(personFields) {
   const person = new Person();
@@ -62,7 +64,21 @@ export async function deletePerson(id) {
     if (person.associatedCompany) {
       await deleteFromExAssociatedCompany(person);
     }
-    return Person.deleteOne({ _id: person._id });
+
+    if (person.notes) {
+      person.notes.forEach(async (noteId) => {
+        await Note.deleteOne({ _id: noteId });
+      });
+    }
+
+    if (person.tasks) {
+      person.tasks.forEach(async (taskId) => {
+        await Task.deleteOne({ _id: taskId });
+      });
+    }
+
+    const deletedPerson = await Person.deleteOne({ _id: person._id });
+    return deletedPerson;
   } catch (error) {
     throw new Error(`delete person error: ${error}`);
   }
@@ -93,12 +109,24 @@ export async function updatePerson(id, personFields) {
     if (tags) {
       person.tags = tags;
     }
-    if (associatedCompany) {
+    if (associatedCompany && associatedCompany !== person.associatedCompany.toString()) {
       if (person.associatedCompany) {
         await deleteFromExAssociatedCompany(person);
       }
       await addToAssociatedCompany(associatedCompany, person);
       person.associatedCompany = associatedCompany;
+
+      person.notes.forEach(async (noteId) => {
+        const noteFound = await Note.findById(noteId);
+        noteFound.associatedCompany = associatedCompany;
+        await noteFound.save();
+      });
+
+      person.tasks.forEach(async (taskId) => {
+        const taskFound = await Task.findById(taskId);
+        taskFound.associatedCompany = associatedCompany;
+        await taskFound.save();
+      });
     }
     if (notes) {
       person.notes = notes;

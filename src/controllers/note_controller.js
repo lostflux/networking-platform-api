@@ -21,6 +21,7 @@ export async function createNote(noteFields) {
       await addToAssociatedCompany(note.associatedCompany, note);
     }
     const savedNote = await note.save();
+    console.log(savedNote);
     return savedNote;
   } catch (error) {
     throw new Error(`create note error: ${error}`);
@@ -61,12 +62,13 @@ export async function deleteNote(id) {
   try {
     const note = await Note.findById(id);
     if (note.associatedPerson) {
-      await deleteFromExAssociatedPerson(note);
+      deleteFromExAssociatedPerson(note);
     }
     if (note.associatedCompany) {
-      await deleteFromExAssociatedCompany(note);
+      deleteFromExAssociatedCompany(note);
     }
-    return Note.deleteOne({ _id: note._id });
+    const deletedNote = await Note.deleteOne({ _id: id });
+    return deletedNote;
   } catch (error) {
     throw new Error(`delete note error: ${error}`);
   }
@@ -80,7 +82,6 @@ export async function updateNote(id, noteFields) {
     } = noteFields;
     if (title) {
       note.title = title;
-      await note.validate();
     }
     if (content) {
       note.content = content;
@@ -88,19 +89,23 @@ export async function updateNote(id, noteFields) {
     if (tags) {
       note.tags = tags;
     }
-    if (associatedPerson) {
+    if (associatedPerson && associatedPerson !== note.associatedPerson.toString()) {
+      await note.validate();
       await deleteFromExAssociatedCompany(note);
       await deleteFromExAssociatedPerson(note);
       await addToAssociatedPerson(associatedPerson, associatedCompany, note);
       note.associatedPerson = associatedPerson;
-    } else if (associatedCompany) {
-      if (note.associatedPerson && note.associatedCompany !== associatedCompany) {
+    } else if (associatedCompany && note.associatedCompany.toString() !== associatedCompany) {
+      await note.validate();
+      if (note.associatedPerson) {
         throw new Error('cannot associate note to a new company if it is already associated with a person in existing company');
       }
       await deleteFromExAssociatedCompany(note);
+      await addToAssociatedCompany(associatedCompany, note);
       note.associatedCompany = associatedCompany;
     }
-    return note.save();
+    const savedNote = await note.save();
+    return savedNote;
   } catch (error) {
     throw new Error(`update note error: ${error}`);
   }
@@ -112,7 +117,7 @@ async function addToAssociatedCompany(companyId, note) {
     if (!company) {
       throw new Error('unable to find company');
     }
-    company.notes.push({ title: note.title, noteId: note.id });
+    company.notes.push(note.id);
     const savedCompany = await company.save();
     return savedCompany;
   } catch (error) {
@@ -123,9 +128,7 @@ async function addToAssociatedCompany(companyId, note) {
 async function deleteFromExAssociatedCompany(note) {
   try {
     const company = await Company.findById(note.associatedCompany);
-    company.notes = company.notes.filter((noteInList) => {
-      return noteInList.noteId === note.id;
-    });
+    company.notes.pull(note.id);
     const savedCompany = await company.save();
     return savedCompany;
   } catch (error) {
@@ -140,17 +143,17 @@ async function addToAssociatedPerson(personId, companyId, note) {
       throw new Error('unable to find person');
     }
     if (companyId) {
-      if (person.associatedCompany && person.associatedCompany !== companyId) {
+      if (person.associatedCompany && person.associatedCompany.toString() !== companyId) {
         throw new Error('mismatch between associated company and associated person');
       } else {
-        await addToAssociatedCompany(companyId, note);
+        addToAssociatedCompany(companyId, note);
         note.associatedCompany = companyId;
       }
     } else if (person.associatedCompany) {
-      await addToAssociatedCompany(person.associatedCompany, note);
+      addToAssociatedCompany(person.associatedCompany, note);
       note.associatedCompany = person.associatedCompany;
     }
-    person.notes.push({ title: note.title, noteId: note.id });
+    person.notes.push(note.id);
     const savedPerson = await person.save();
     return savedPerson;
   } catch (error) {
@@ -161,9 +164,7 @@ async function addToAssociatedPerson(personId, companyId, note) {
 async function deleteFromExAssociatedPerson(note) {
   try {
     const person = await Person.findById(note.associatedPerson);
-    person.notes = person.notes.filter((noteInList) => {
-      return noteInList.noteId === note.id;
-    });
+    person.notes.pull(note.id);
     const savedPerson = await person.save();
     return savedPerson;
   } catch (error) {
