@@ -8,6 +8,7 @@ export async function createCompany(companyFields) {
   company.name = companyFields.name;
   company.website = companyFields.website || '';
   company.linkedin = companyFields.linkedin || '';
+  company.imageUrl = companyFields.imageUrl || '';
   company.location = companyFields.location || '';
   company.description = companyFields.description || '';
   company.tags = companyFields.tags || [];
@@ -25,7 +26,7 @@ export async function createCompany(companyFields) {
 
 export async function getCompanies() {
   try {
-    const companies = await Company.find({}, 'name website tags associatedPeople');
+    const companies = await Company.find({}, 'name website description imageUrl tags associatedPeople');
     return companies;
   } catch (error) {
     throw new Error(`get company error: ${error}`);
@@ -100,13 +101,16 @@ export async function updateCompany(id, companyFields) {
   try {
     const company = await Company.findById(id);
     const {
-      name, website, linkedin, description, location, tags, associatedPeople, notes, tasks,
+      name, website, linkedin, imageUrl, description, location, tags, associatedPeople, notes, tasks,
     } = companyFields;
     if (name) {
       company.name = name;
     }
     if (website) {
       company.website = website;
+    }
+    if (imageUrl) {
+      company.imageUrl = imageUrl;
     }
     if (linkedin) {
       company.linkedin = linkedin;

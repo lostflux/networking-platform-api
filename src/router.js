@@ -1,13 +1,34 @@
 import { Router } from 'express';
+import { requireSignin } from './services/passport';
 import * as Company from './controllers/company_controller';
 import * as Person from './controllers/person_controller';
 import * as Note from './controllers/note_controller';
 import * as Task from './controllers/task_controller';
+import * as User from './controllers/user_controller';
 
 const router = Router();
 
 router.get('/', (req, res) => {
   res.json({ message: 'welcome to our blog api!' });
+});
+
+router.post('/signin', requireSignin, async (req, res) => {
+  try {
+    const token = User.signin(req.user);
+    res.json({ token, email: req.user.email, id: req.user._id });
+  } catch (error) {
+    res.status(422).send({ error: error.toString() });
+  }
+});
+
+router.post('/signup', async (req, res) => {
+  try {
+    console.log(`req.body: ${req.body.email}`);
+    const token = await User.signup(req.body);
+    res.json({ token, email: req.body.email, id: req.user._id });
+  } catch (error) {
+    res.status(422).send({ error: error.toString() });
+  }
 });
 
 router.post('/companies', async (req, res) => {

@@ -8,6 +8,7 @@ export async function createPerson(personFields) {
   person.name = personFields.name;
   person.linkedin = personFields.linkedin || '';
   person.description = personFields.description || '';
+  person.imageUrl = personFields.imageUrl || '';
   person.location = personFields.location || '';
   person.notes = personFields.notes || [];
   person.tags = personFields.tags || [];
@@ -88,7 +89,7 @@ export async function updatePerson(id, personFields) {
   try {
     const person = await Person.findById(id);
     const {
-      name, title, linkedin, email, description, tags, associatedCompany, notes, tasks,
+      name, title, linkedin, imageUrl, email, description, tags, associatedCompany, notes, tasks,
     } = personFields;
     if (name) {
       person.name = name;
@@ -99,6 +100,9 @@ export async function updatePerson(id, personFields) {
     }
     if (linkedin) {
       person.linkedin = linkedin;
+    }
+    if (imageUrl) {
+      person.imageUrl = imageUrl;
     }
     if (email) {
       person.email = email;
