@@ -48,13 +48,61 @@ describe('Authentication', () => {
     });
   });
 });
+it('user makes company without auth token, expecting failure code 401', () => {
+  cy.request({
+    failOnStatusCode: false,
+    method: 'POST',
+    url: '/api/companies',
+    body: {
+      name: 'unauthenticated company',
+    },
+  }).then((response) => {
+    expect(response.status).to.eq(401);
+  });
+});
+it('user makes person without auth token, expecting failure code 401', () => {
+  cy.request({
+    failOnStatusCode: false,
+    method: 'POST',
+    url: '/api/people',
+    body: {
+      name: 'unauthenticated person',
+    },
+  }).then((response) => {
+    expect(response.status).to.eq(401);
+  });
+});
+it('user makes note without auth token, expecting failure code 401', () => {
+  cy.request({
+    failOnStatusCode: false,
+    method: 'POST',
+    url: '/api/notes',
+    body: {
+      title: 'unauthenticated note',
+    },
+  }).then((response) => {
+    expect(response.status).to.eq(401);
+  });
+});
+it('user makes task without auth token, expecting failure code 401', () => {
+  cy.request({
+    failOnStatusCode: false,
+    method: 'POST',
+    url: '/api/tasks',
+    body: {
+      title: 'unauthenticated task',
+    },
+  }).then((response) => {
+    expect(response.status).to.eq(401);
+  });
+});
 
 describe('Final Project: CRUD operations', () => {
   // TESTING FOR COMPANY API
   it('user creates a company', () => {
     cy.request({
       method: 'POST',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: '/api/companies',
       body:
       {
@@ -72,7 +120,7 @@ describe('Final Project: CRUD operations', () => {
     // Creates second company to validate other tests and for other testing purposes
     cy.request({
       method: 'POST',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: '/api/companies',
       body:
       {
@@ -88,7 +136,7 @@ describe('Final Project: CRUD operations', () => {
     });
     cy.request({
       method: 'POST',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: '/api/companies',
       body:
       {
@@ -103,7 +151,7 @@ describe('Final Project: CRUD operations', () => {
     cy.request({
       failOnStatusCode: false,
       method: 'POST',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: '/api/companies',
       body:
       {
@@ -118,7 +166,7 @@ describe('Final Project: CRUD operations', () => {
     cy.request({
       failOnStatusCode: false,
       method: 'POST',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: '/api/companies',
       body:
       {
@@ -131,7 +179,7 @@ describe('Final Project: CRUD operations', () => {
   it('user retrieves a company', () => {
     cy.request({
       method: 'GET',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: `/api/companies/${companiesId[0]}`,
     }).then((response) => {
       expect(response.status).to.eq(200);
@@ -147,7 +195,7 @@ describe('Final Project: CRUD operations', () => {
     cy.request({
       failOnStatusCode: false,
       method: 'GET',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: '/api/companies/foobar',
     }).then((response) => {
       expect(response.status).to.eq(404);
@@ -156,7 +204,7 @@ describe('Final Project: CRUD operations', () => {
   it('user updates a company', () => {
     cy.request({
       method: 'PUT',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: `/api/companies/${companiesId[0]}`,
       body:
       {
@@ -170,7 +218,7 @@ describe('Final Project: CRUD operations', () => {
   it('user deletes a company', () => {
     cy.request({
       method: 'DELETE',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: `/api/companies/${companiesId[0]}`,
     }).then((response) => {
       expect(response.status).to.eq(200);
@@ -180,7 +228,7 @@ describe('Final Project: CRUD operations', () => {
     cy.request({
       failOnStatusCode: false,
       method: 'GET',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: `/api/companies/${companiesId[0]}`,
     }).then((res) => {
       expect(res.status).to.eq(404);
@@ -191,7 +239,7 @@ describe('Final Project: CRUD operations', () => {
   it('user creates a person', () => {
     cy.request({
       method: 'POST',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: '/api/people',
       body:
       {
@@ -209,7 +257,7 @@ describe('Final Project: CRUD operations', () => {
     // Creates 2nd person for future testing purposes
     cy.request({
       method: 'POST',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: '/api/people',
       body:
       {
@@ -223,7 +271,7 @@ describe('Final Project: CRUD operations', () => {
     // Creates 3rd person for deleting testing purposes
     cy.request({
       method: 'POST',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: '/api/people',
       body:
       {
@@ -239,7 +287,7 @@ describe('Final Project: CRUD operations', () => {
     cy.request({
       failOnStatusCode: false,
       method: 'POST',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: '/api/people',
       body:
       {
@@ -253,7 +301,7 @@ describe('Final Project: CRUD operations', () => {
     cy.request({
       failOnStatusCode: false,
       method: 'POST',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: '/api/people',
       body:
       {
@@ -267,7 +315,7 @@ describe('Final Project: CRUD operations', () => {
   it('user retrieves a person', () => {
     cy.request({
       method: 'GET',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: `/api/people/${peopleId[0]}`,
     }).then((response) => {
       expect(response.status).to.eq(200);
@@ -282,7 +330,7 @@ describe('Final Project: CRUD operations', () => {
     cy.request({
       failOnStatusCode: false,
       method: 'GET',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: '/api/people/foobar',
     }).then((response) => {
       expect(response.status).to.eq(404);
@@ -291,7 +339,7 @@ describe('Final Project: CRUD operations', () => {
   it('user updates a person', () => {
     cy.request({
       method: 'PUT',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: `/api/people/${peopleId[0]}`,
       body:
       {
@@ -305,7 +353,7 @@ describe('Final Project: CRUD operations', () => {
   it('user updates a person\'s associated company', () => {
     cy.request({
       method: 'PUT',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: `/api/people/${peopleId[0]}`,
       body:
       {
@@ -317,7 +365,7 @@ describe('Final Project: CRUD operations', () => {
     });
     cy.request({
       method: 'GET',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: `/api/companies/${companiesId[2]}`,
     }).then((response) => {
       expect(response.status).to.eq(200);
@@ -325,7 +373,7 @@ describe('Final Project: CRUD operations', () => {
     });
     cy.request({
       method: 'GET',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: `/api/companies/${companiesId[1]}`,
     }).then((response) => {
       expect(response.status).to.eq(200);
@@ -336,7 +384,7 @@ describe('Final Project: CRUD operations', () => {
     cy.request({
       failOnStatusCode: false,
       method: 'PUT',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: `/api/people/${peopleId[0]}`,
       body:
       {
@@ -349,14 +397,14 @@ describe('Final Project: CRUD operations', () => {
   it('user deletes person, expects to delete from associatedCompany too', () => {
     cy.request({
       method: 'DELETE',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: `/api/people/${peopleId[2]}`,
     }).then((res) => {
       expect(res.status).to.eq(200);
     });
     cy.request({
       method: 'GET',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: `/api/companies/${companiesId[2]}`,
     }).then((res) => {
       expect(res.status).to.eq(200);
@@ -367,7 +415,7 @@ describe('Final Project: CRUD operations', () => {
     cy.request({
       failOnStatusCode: false,
       method: 'GET',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: `/api/people/${peopleId[2]}`,
     }).then((res) => {
       expect(res.status).to.eq(404);
@@ -378,7 +426,7 @@ describe('Final Project: CRUD operations', () => {
   it('user creates a note', () => {
     cy.request({
       method: 'POST',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: '/api/notes',
       body:
       {
@@ -395,7 +443,7 @@ describe('Final Project: CRUD operations', () => {
     cy.request({
       failOnStatusCode: false,
       method: 'POST',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: '/api/notes',
       body:
       {
@@ -410,7 +458,7 @@ describe('Final Project: CRUD operations', () => {
     cy.request({
       failOnStatusCode: false,
       method: 'POST',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: '/api/notes',
       body:
       {
@@ -426,7 +474,7 @@ describe('Final Project: CRUD operations', () => {
   it('user retrieves a note', () => {
     cy.request({
       method: 'GET',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: `/api/notes/${noteId}`,
     }).then((response) => {
       expect(response.status).to.eq(200);
@@ -438,7 +486,7 @@ describe('Final Project: CRUD operations', () => {
     cy.request({
       failOnStatusCode: false,
       method: 'GET',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: '/api/notes/BADID',
     }).then((response) => {
       expect(response.status).to.eq(404);
@@ -447,7 +495,7 @@ describe('Final Project: CRUD operations', () => {
   it('user updates note with new person', () => {
     cy.request({
       method: 'PUT',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: `/api/notes/${noteId}`,
       body:
       {
@@ -462,7 +510,7 @@ describe('Final Project: CRUD operations', () => {
     });
     cy.request({
       method: 'GET',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: `/api/companies/${companiesId[1]}`,
     }).then((response) => {
       expect(response.status).to.eq(200);
@@ -470,7 +518,7 @@ describe('Final Project: CRUD operations', () => {
     });
     cy.request({
       method: 'GET',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: `/api/companies/${companiesId[2]}`,
     }).then((response) => {
       expect(response.status).to.eq(200);
@@ -478,7 +526,7 @@ describe('Final Project: CRUD operations', () => {
     });
     cy.request({
       method: 'GET',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: `/api/people/${peopleId[1]}`,
     }).then((response) => {
       expect(response.status).to.eq(200);
@@ -486,7 +534,7 @@ describe('Final Project: CRUD operations', () => {
     });
     cy.request({
       method: 'GET',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: `/api/people/${peopleId[0]}`,
     }).then((response) => {
       expect(response.status).to.eq(200);
@@ -497,7 +545,7 @@ describe('Final Project: CRUD operations', () => {
     cy.request({
       failOnStatusCode: false,
       method: 'PUT',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: `/api/notes/${taskId}`,
       body:
       {
@@ -510,7 +558,7 @@ describe('Final Project: CRUD operations', () => {
     });
     cy.request({
       method: 'GET',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: `/api/companies/${companiesId[1]}`,
     }).then((response) => {
       expect(response.status).to.eq(200);
@@ -518,7 +566,7 @@ describe('Final Project: CRUD operations', () => {
     });
     cy.request({
       method: 'GET',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: `/api/companies/${companiesId[2]}`,
     }).then((response) => {
       expect(response.status).to.eq(200);
@@ -526,7 +574,7 @@ describe('Final Project: CRUD operations', () => {
     });
     cy.request({
       method: 'GET',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: `/api/people/${peopleId[1]}`,
     }).then((response) => {
       expect(response.status).to.eq(200);
@@ -534,7 +582,7 @@ describe('Final Project: CRUD operations', () => {
     });
     cy.request({
       method: 'GET',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: `/api/people/${peopleId[0]}`,
     }).then((response) => {
       expect(response.status).to.eq(200);
@@ -545,7 +593,7 @@ describe('Final Project: CRUD operations', () => {
     cy.request({
       failOnStatusCode: false,
       method: 'PUT',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: `/api/notes/${noteId}`,
       body:
       {
@@ -556,7 +604,7 @@ describe('Final Project: CRUD operations', () => {
     });
     cy.request({
       method: 'GET',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: `/api/companies/${companiesId[1]}`,
     }).then((response) => {
       expect(response.status).to.eq(200);
@@ -564,7 +612,7 @@ describe('Final Project: CRUD operations', () => {
     });
     cy.request({
       method: 'GET',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: `/api/companies/${companiesId[2]}`,
     }).then((response) => {
       expect(response.status).to.eq(200);
@@ -575,14 +623,14 @@ describe('Final Project: CRUD operations', () => {
     cy.request({
       failOnStatusCode: false,
       method: 'DELETE',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: `/api/notes/${noteId}`,
     }).then((response) => {
       expect(response.status).to.eq(200);
     });
     cy.request({
       method: 'GET',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: `/api/companies/${companiesId[1]}`,
     }).then((response) => {
       expect(response.status).to.eq(200);
@@ -590,7 +638,7 @@ describe('Final Project: CRUD operations', () => {
     });
     cy.request({
       method: 'GET',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: `/api/people/${peopleId[1]}`,
     }).then((response) => {
       expect(response.status).to.eq(200);
@@ -601,7 +649,7 @@ describe('Final Project: CRUD operations', () => {
     cy.request({
       failOnStatusCode: false,
       method: 'GET',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: `/api/notes/${noteId}`,
     }).then((res) => {
       expect(res.status).to.eq(404);
@@ -612,7 +660,7 @@ describe('Final Project: CRUD operations', () => {
   it('user creates a tasks', () => {
     cy.request({
       method: 'POST',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: '/api/tasks',
       body:
       {
@@ -628,7 +676,7 @@ describe('Final Project: CRUD operations', () => {
     });
     cy.request({
       method: 'GET',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: `/api/people/${peopleId[0]}`,
     }).then((response) => {
       expect(response.status).to.eq(200);
@@ -636,7 +684,7 @@ describe('Final Project: CRUD operations', () => {
     });
     cy.request({
       method: 'GET',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: `/api/companies/${companiesId[2]}`,
     }).then((response) => {
       expect(response.status).to.eq(200);
@@ -646,7 +694,7 @@ describe('Final Project: CRUD operations', () => {
   it('user retrieves a task', () => {
     cy.request({
       method: 'GET',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: `/api/tasks/${taskId}`,
     }).then((response) => {
       expect(response.status).to.eq(200);
@@ -662,7 +710,7 @@ describe('Final Project: CRUD operations', () => {
     cy.request({
       failOnStatusCode: false,
       method: 'POST',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: '/api/tasks',
       body:
       {
@@ -676,7 +724,7 @@ describe('Final Project: CRUD operations', () => {
     });
     cy.request({
       method: 'GET',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: `/api/people/${peopleId[0]}`,
     }).then((response) => {
       expect(response.status).to.eq(200);
@@ -684,7 +732,7 @@ describe('Final Project: CRUD operations', () => {
     });
     cy.request({
       method: 'GET',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: `/api/companies/${companiesId[2]}`,
     }).then((response) => {
       expect(response.status).to.eq(200);
@@ -695,7 +743,7 @@ describe('Final Project: CRUD operations', () => {
     cy.request({
       failOnStatusCode: false,
       method: 'POST',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: '/api/tasks',
       body:
       {
@@ -708,7 +756,7 @@ describe('Final Project: CRUD operations', () => {
     cy.request({
       failOnStatusCode: false,
       method: 'POST',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: '/api/tasks',
       body:
       {
@@ -722,7 +770,7 @@ describe('Final Project: CRUD operations', () => {
   it('user updates task with new person', () => {
     cy.request({
       method: 'PUT',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: `/api/tasks/${taskId}`,
       body:
       {
@@ -737,7 +785,7 @@ describe('Final Project: CRUD operations', () => {
     });
     cy.request({
       method: 'GET',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: `/api/companies/${companiesId[1]}`,
     }).then((response) => {
       expect(response.status).to.eq(200);
@@ -745,7 +793,7 @@ describe('Final Project: CRUD operations', () => {
     });
     cy.request({
       method: 'GET',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: `/api/companies/${companiesId[2]}`,
     }).then((response) => {
       expect(response.status).to.eq(200);
@@ -753,7 +801,7 @@ describe('Final Project: CRUD operations', () => {
     });
     cy.request({
       method: 'GET',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: `/api/people/${peopleId[1]}`,
     }).then((response) => {
       expect(response.status).to.eq(200);
@@ -761,7 +809,7 @@ describe('Final Project: CRUD operations', () => {
     });
     cy.request({
       method: 'GET',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: `/api/people/${peopleId[0]}`,
     }).then((response) => {
       expect(response.status).to.eq(200);
@@ -772,7 +820,7 @@ describe('Final Project: CRUD operations', () => {
     cy.request({
       failOnStatusCode: false,
       method: 'PUT',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: `/api/tasks/${taskId}`,
       body:
       {
@@ -786,7 +834,7 @@ describe('Final Project: CRUD operations', () => {
     });
     cy.request({
       method: 'GET',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: `/api/companies/${companiesId[1]}`,
     }).then((response) => {
       expect(response.status).to.eq(200);
@@ -794,7 +842,7 @@ describe('Final Project: CRUD operations', () => {
     });
     cy.request({
       method: 'GET',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: `/api/companies/${companiesId[2]}`,
     }).then((response) => {
       expect(response.status).to.eq(200);
@@ -802,7 +850,7 @@ describe('Final Project: CRUD operations', () => {
     });
     cy.request({
       method: 'GET',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: `/api/people/${peopleId[1]}`,
     }).then((response) => {
       expect(response.status).to.eq(200);
@@ -810,7 +858,7 @@ describe('Final Project: CRUD operations', () => {
     });
     cy.request({
       method: 'GET',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: `/api/people/${peopleId[0]}`,
     }).then((response) => {
       expect(response.status).to.eq(200);
@@ -821,7 +869,7 @@ describe('Final Project: CRUD operations', () => {
     cy.request({
       failOnStatusCode: false,
       method: 'PUT',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: `/api/tasks/${taskId}`,
       body:
       {
@@ -832,7 +880,7 @@ describe('Final Project: CRUD operations', () => {
     });
     cy.request({
       method: 'GET',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: `/api/companies/${companiesId[1]}`,
     }).then((response) => {
       expect(response.status).to.eq(200);
@@ -840,7 +888,7 @@ describe('Final Project: CRUD operations', () => {
     });
     cy.request({
       method: 'GET',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: `/api/companies/${companiesId[2]}`,
     }).then((response) => {
       expect(response.status).to.eq(200);
@@ -851,14 +899,14 @@ describe('Final Project: CRUD operations', () => {
     cy.request({
       failOnStatusCode: false,
       method: 'DELETE',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: `/api/tasks/${taskId}`,
     }).then((response) => {
       expect(response.status).to.eq(200);
     });
     cy.request({
       method: 'GET',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: `/api/companies/${companiesId[1]}`,
     }).then((response) => {
       expect(response.status).to.eq(200);
@@ -866,7 +914,7 @@ describe('Final Project: CRUD operations', () => {
     });
     cy.request({
       method: 'GET',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: `/api/people/${peopleId[1]}`,
     }).then((response) => {
       expect(response.status).to.eq(200);
@@ -877,7 +925,7 @@ describe('Final Project: CRUD operations', () => {
     cy.request({
       failOnStatusCode: false,
       method: 'GET',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: `/api/tasks/${taskId}`,
     }).then((res) => {
       expect(res.status).to.eq(404);
@@ -888,7 +936,7 @@ describe('Final Project: CRUD operations', () => {
   it('user deletes company, expected for person and people associated tasks/notes to remain, only company associated notes/tasks to delete', () => {
     cy.request({
       method: 'POST',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: '/api/tasks',
       body:
       {
@@ -903,7 +951,7 @@ describe('Final Project: CRUD operations', () => {
 
     cy.request({
       method: 'POST',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: '/api/tasks',
       body:
       {
@@ -918,7 +966,7 @@ describe('Final Project: CRUD operations', () => {
 
     cy.request({
       method: 'POST',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: '/api/notes',
       body:
       {
@@ -933,7 +981,7 @@ describe('Final Project: CRUD operations', () => {
 
     cy.request({
       method: 'POST',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: '/api/notes',
       body:
       {
@@ -950,7 +998,7 @@ describe('Final Project: CRUD operations', () => {
 
     cy.request({
       method: 'DELETE',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: `/api/companies/${companiesId[2]}`,
     }).then((response) => {
       expect(response.status).to.eq(200);
@@ -959,7 +1007,7 @@ describe('Final Project: CRUD operations', () => {
     cy.request({
       failOnStatusCode: false,
       method: 'GET',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: `/api/notes/${deadNoteId}`,
     }).then((response) => {
       expect(response.status).to.eq(404);
@@ -968,7 +1016,7 @@ describe('Final Project: CRUD operations', () => {
     cy.request({
       failOnStatusCode: false,
       method: 'GET',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: `/api/tasks/${deadTaskId}`,
     }).then((response) => {
       expect(response.status).to.eq(404);
@@ -976,7 +1024,7 @@ describe('Final Project: CRUD operations', () => {
 
     cy.request({
       method: 'GET',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: `/api/notes/${noteId}`,
     }).then((response) => {
       expect(response.status).to.eq(200);
@@ -984,7 +1032,7 @@ describe('Final Project: CRUD operations', () => {
 
     cy.request({
       method: 'GET',
-      // headers: { authorization: token },
+      headers: { authorization: token },
       url: `/api/tasks/${taskId}`,
     }).then((response) => {
       expect(response.status).to.eq(200);
