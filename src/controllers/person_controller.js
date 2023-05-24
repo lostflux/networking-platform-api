@@ -8,7 +8,7 @@ export async function createPerson(personFields) {
   person.name = personFields.name;
   person.linkedin = personFields.linkedin || '';
   person.description = personFields.description || '';
-  person.imageUrl = person.imageUrl || '';
+  person.imageUrl = personFields.imageUrl || '';
   person.location = personFields.location || '';
   person.notes = personFields.notes || [];
   person.tags = personFields.tags || [];

@@ -31,7 +31,7 @@ router.post('/signup', async (req, res) => {
   }
 });
 
-router.post('/companies', async (req, res) => {
+router.post('/companies', requireAuth, async (req, res) => {
   const companyFields = req.body;
 
   try {
@@ -42,7 +42,7 @@ router.post('/companies', async (req, res) => {
   }
 });
 
-router.get('/companies', async (req, res) => {
+router.get('/companies', requireAuth, async (req, res) => {
   try {
     const result = await Company.getCompanies();
     return res.json(result);
@@ -51,7 +51,7 @@ router.get('/companies', async (req, res) => {
   }
 });
 
-router.get('/companies/search', async (req, res) => {
+router.get('/companies/search', requireAuth, async (req, res) => {
   const { q: searchTerm } = req.query;
 
   try {
@@ -62,7 +62,7 @@ router.get('/companies/search', async (req, res) => {
   }
 });
 
-router.get('/companies/:id', async (req, res) => {
+router.get('/companies/:id', requireAuth, async (req, res) => {
   const companyId = req.params.id;
 
   try {
@@ -73,7 +73,7 @@ router.get('/companies/:id', async (req, res) => {
   }
 });
 
-router.put('/companies/:id', async (req, res) => {
+router.put('/companies/:id', requireAuth, async (req, res) => {
   const companyId = req.params.id;
   const companyFields = req.body;
 
@@ -85,7 +85,7 @@ router.put('/companies/:id', async (req, res) => {
   }
 });
 
-router.delete('/companies/:id', async (req, res) => {
+router.delete('/companies/:id', requireAuth, async (req, res) => {
   const companyId = req.params.id;
 
   try {
@@ -96,7 +96,7 @@ router.delete('/companies/:id', async (req, res) => {
   }
 });
 
-router.post('/people', async (req, res) => {
+router.post('/people', requireAuth, async (req, res) => {
   const personFields = req.body;
 
   try {
@@ -107,7 +107,7 @@ router.post('/people', async (req, res) => {
   }
 });
 
-router.get('/people', async (req, res) => {
+router.get('/people', requireAuth, async (req, res) => {
   try {
     const result = await Person.getPeople();
     return res.json(result);
@@ -116,7 +116,7 @@ router.get('/people', async (req, res) => {
   }
 });
 
-router.get('/people/search', async (req, res) => {
+router.get('/people/search', requireAuth, async (req, res) => {
   const { q: searchTerm } = req.query;
 
   try {
@@ -127,7 +127,7 @@ router.get('/people/search', async (req, res) => {
   }
 });
 
-router.get('/people/:id', async (req, res) => {
+router.get('/people/:id', requireAuth, async (req, res) => {
   const personId = req.params.id;
 
   try {
@@ -138,7 +138,7 @@ router.get('/people/:id', async (req, res) => {
   }
 });
 
-router.put('/people/:id', async (req, res) => {
+router.put('/people/:id', requireAuth, async (req, res) => {
   const personId = req.params.id;
   const personFields = req.body;
 
@@ -150,7 +150,7 @@ router.put('/people/:id', async (req, res) => {
   }
 });
 
-router.delete('/people/:id', async (req, res) => {
+router.delete('/people/:id', requireAuth, async (req, res) => {
   const personId = req.params.id;
 
   try {
@@ -161,7 +161,7 @@ router.delete('/people/:id', async (req, res) => {
   }
 });
 
-router.post('/notes', async (req, res) => {
+router.post('/notes', requireAuth, async (req, res) => {
   const noteFields = req.body;
 
   try {
@@ -172,7 +172,7 @@ router.post('/notes', async (req, res) => {
   }
 });
 
-router.get('/notes', async (req, res) => {
+router.get('/notes', requireAuth, async (req, res) => {
   try {
     const result = await Note.getNotes();
     return res.json(result);
@@ -181,7 +181,7 @@ router.get('/notes', async (req, res) => {
   }
 });
 
-router.get('/notes/search', async (req, res) => {
+router.get('/notes/search', requireAuth, async (req, res) => {
   const { q: searchTerm } = req.query;
 
   try {
@@ -192,7 +192,7 @@ router.get('/notes/search', async (req, res) => {
   }
 });
 
-router.get('/notes/:id', async (req, res) => {
+router.get('/notes/:id', requireAuth, async (req, res) => {
   const noteId = req.params.id;
 
   try {
@@ -203,7 +203,7 @@ router.get('/notes/:id', async (req, res) => {
   }
 });
 
-router.put('/notes/:id', async (req, res) => {
+router.put('/notes/:id', requireAuth, async (req, res) => {
   const noteId = req.params.id;
   const noteFields = req.body;
 
@@ -215,7 +215,7 @@ router.put('/notes/:id', async (req, res) => {
   }
 });
 
-router.delete('/notes/:id', async (req, res) => {
+router.delete('/notes/:id', requireAuth, async (req, res) => {
   const noteId = req.params.id;
 
   try {
@@ -226,7 +226,7 @@ router.delete('/notes/:id', async (req, res) => {
   }
 });
 
-router.post('/tasks', async (req, res) => {
+router.post('/tasks', requireAuth, async (req, res) => {
   const taskFields = req.body;
 
   try {
@@ -237,7 +237,7 @@ router.post('/tasks', async (req, res) => {
   }
 });
 
-router.get('/tasks', async (req, res) => {
+router.get('/tasks', requireAuth, async (req, res) => {
   try {
     const result = await Task.getTasks();
     return res.json(result);
@@ -246,7 +246,7 @@ router.get('/tasks', async (req, res) => {
   }
 });
 
-router.get('/tasks/search', async (req, res) => {
+router.get('/tasks/search', requireAuth, async (req, res) => {
   const { q: searchTerm } = req.query;
 
   try {
@@ -257,7 +257,7 @@ router.get('/tasks/search', async (req, res) => {
   }
 });
 
-router.get('/tasks/:id', async (req, res) => {
+router.get('/tasks/:id', requireAuth, async (req, res) => {
   const taskId = req.params.id;
 
   try {
@@ -268,7 +268,7 @@ router.get('/tasks/:id', async (req, res) => {
   }
 });
 
-router.put('/tasks/:id', async (req, res) => {
+router.put('/tasks/:id', requireAuth, async (req, res) => {
   const taskId = req.params.id;
   const taskFields = req.body;
 
@@ -280,7 +280,7 @@ router.put('/tasks/:id', async (req, res) => {
   }
 });
 
-router.delete('/tasks/:id', async (req, res) => {
+router.delete('/tasks/:id', requireAuth, async (req, res) => {
   const taskId = req.params.id;
 
   try {

@@ -26,7 +26,7 @@ export async function createCompany(companyFields) {
 
 export async function getCompanies() {
   try {
-    const companies = await Company.find({}, 'name website tags associatedPeople');
+    const companies = await Company.find({}, 'name website description imageUrl tags associatedPeople');
     return companies;
   } catch (error) {
     throw new Error(`get company error: ${error}`);
