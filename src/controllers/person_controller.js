@@ -3,7 +3,7 @@ import Company from '../models/company_model';
 import Note from '../models/note_model';
 import Task from '../models/task_model';
 
-export async function createPerson(personFields) {
+export async function createPerson(personFields, userId) {
   const person = new Person();
   person.name = personFields.name;
   person.linkedin = personFields.linkedin || '';
@@ -16,11 +16,16 @@ export async function createPerson(personFields) {
   person.associatedCompany = personFields.associatedCompany || null;
   person.title = personFields.title || '';
   person.email = personFields.email || '';
+  person.author = userId;
 
   try {
     await person.validate();
     if (person.associatedCompany) {
-      await addToAssociatedCompany(person.associatedCompany, person);
+      await addToAssociatedCompany(person.associatedCompany, person, userId);
+    }
+
+    if (userId !== person.author.toString()) {
+      throw new Error('No permission error');
     }
     const savedPerson = await person.save();
     return savedPerson;
@@ -29,29 +34,35 @@ export async function createPerson(personFields) {
   }
 }
 
-export async function getPeople() {
+export async function getPeople(userId) {
   try {
-    const people = await Person.find({}, 'name title email tags associatedCompany');
+    const people = await Person.find({ author: userId }, 'name title email tags associatedCompany');
+
     return people;
   } catch (error) {
     throw new Error(`get person error: ${error}`);
   }
 }
 
-export async function findPeople(query) {
+export async function findPeople(query, userId) {
   try {
-    const searchedPeople = await Person.find({ $text: { $search: query } }, 'name title email tags associatedCompany');
+    const searchedPeople = await Person.find({ author: userId, $text: { $search: query } }, 'name title email tags associatedCompany');
+
     return searchedPeople;
   } catch (error) {
     throw new Error(`get person error: ${error}`);
   }
 }
 
-export async function getPerson(id) {
+export async function getPerson(id, userId) {
   try {
     const person = await Person.findById(id);
     if (!person) {
       throw new Error('unable to find person');
+    }
+
+    if (userId !== person.author.toString()) {
+      throw new Error('No permission error');
     }
     return person;
   } catch (error) {
@@ -59,13 +70,15 @@ export async function getPerson(id) {
   }
 }
 
-export async function deletePerson(id) {
+export async function deletePerson(id, userId) {
   try {
     const person = await Person.findById(id);
-    if (person.associatedCompany) {
-      await deleteFromExAssociatedCompany(person);
+    if (userId !== person.author.toString()) {
+      throw new Error('No permission error');
     }
-
+    if (person.associatedCompany) {
+      await deleteFromExAssociatedCompany(person, userId);
+    }
     if (person.notes) {
       person.notes.forEach(async (noteId) => {
         await Note.deleteOne({ _id: noteId });
@@ -85,9 +98,18 @@ export async function deletePerson(id) {
   }
 }
 
-export async function updatePerson(id, personFields) {
+export async function updatePerson(id, personFields, userId) {
   try {
     const person = await Person.findById(id);
+
+    if (!person) {
+      throw new Error('unable to find person');
+    }
+
+    if (userId !== person.author.toString()) {
+      throw new Error('No permission error');
+    }
+
     const {
       name, title, linkedin, imageUrl, email, description, tags, associatedCompany, notes, tasks,
     } = personFields;
@@ -115,9 +137,9 @@ export async function updatePerson(id, personFields) {
     }
     if (associatedCompany && associatedCompany !== person.associatedCompany.toString()) {
       if (person.associatedCompany) {
-        await deleteFromExAssociatedCompany(person);
+        await deleteFromExAssociatedCompany(person, userId);
       }
-      await addToAssociatedCompany(associatedCompany, person);
+      await addToAssociatedCompany(associatedCompany, person, userId);
       person.associatedCompany = associatedCompany;
 
       person.notes.forEach(async (noteId) => {
@@ -144,11 +166,15 @@ export async function updatePerson(id, personFields) {
   }
 }
 
-async function addToAssociatedCompany(companyId, person) {
+async function addToAssociatedCompany(companyId, person, userId) {
   try {
     const company = await Company.findById(companyId);
     if (!company) {
       throw new Error('unable to find company');
+    }
+
+    if (userId !== company.author.toString()) {
+      throw new Error('No permission error');
     }
     company.associatedPeople.push(person.id);
     const savedCompany = await company.save();
@@ -158,11 +184,15 @@ async function addToAssociatedCompany(companyId, person) {
   }
 }
 
-async function deleteFromExAssociatedCompany(person) {
+async function deleteFromExAssociatedCompany(person, userId) {
   try {
     const company = await Company.findById(person.associatedCompany);
     if (!company) {
       throw new Error('unable to find company');
+    }
+
+    if (userId !== company.author.toString()) {
+      throw new Error('No permission error');
     }
     company.associatedPeople.pull(person.id);
     const savedCompany = await company.save();

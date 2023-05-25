@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { requireSignin } from './services/passport';
+import { requireAuth, requireSignin } from './services/passport';
 import * as Company from './controllers/company_controller';
 import * as Person from './controllers/person_controller';
 import * as Note from './controllers/note_controller';
@@ -30,260 +30,257 @@ router.post('/signup', async (req, res) => {
   }
 });
 
-router.post('/companies', async (req, res) => {
+router.post('/companies', requireAuth, async (req, res) => {
+  const companyFields = req.body;
+  try {
+    const result = await Company.createCompany(companyFields, req.user.id);
+    return res.json(result);
+  } catch (error) {
+    return res.status(404).json({ error: error.message });
+  }
+});
+
+router.get('/companies', requireAuth, async (req, res) => {
+  try {
+    const result = await Company.getCompanies(req.user.id);
+    return res.json(result);
+  } catch (error) {
+    return res.status(404).json({ error: error.message });
+  }
+});
+
+router.get('/companies/search', requireAuth, async (req, res) => {
+  const { q: searchTerm } = req.query;
+
+  try {
+    const result = await Company.findCompanies(searchTerm, req.user.id);
+    return res.json(result);
+  } catch (error) {
+    return res.status(404).json({ error: error.message });
+  }
+});
+
+router.get('/companies/:id', requireAuth, async (req, res) => {
+  const companyId = req.params.id;
+  try {
+    const result = await Company.getCompany(companyId, req.user.id);
+    return res.json(result);
+  } catch (error) {
+    return res.status(404).json({ error: error.message });
+  }
+});
+
+router.put('/companies/:id', requireAuth, async (req, res) => {
+  const companyId = req.params.id;
   const companyFields = req.body;
 
   try {
-    const result = await Company.createCompany(companyFields);
+    const result = await Company.updateCompany(companyId, companyFields, req.user.id);
     return res.json(result);
   } catch (error) {
     return res.status(404).json({ error: error.message });
   }
 });
 
-router.get('/companies', async (req, res) => {
-  try {
-    const result = await Company.getCompanies();
-    return res.json(result);
-  } catch (error) {
-    return res.status(404).json({ error: error.message });
-  }
-});
-
-router.get('/companies/search', async (req, res) => {
-  const { q: searchTerm } = req.query;
-
-  try {
-    const result = await Company.findCompanies(searchTerm);
-    return res.json(result);
-  } catch (error) {
-    return res.status(404).json({ error: error.message });
-  }
-});
-
-router.get('/companies/:id', async (req, res) => {
+router.delete('/companies/:id', requireAuth, async (req, res) => {
   const companyId = req.params.id;
 
   try {
-    const result = await Company.getCompany(companyId);
+    const result = await Company.deleteCompany(companyId, req.user.id);
     return res.json(result);
   } catch (error) {
     return res.status(404).json({ error: error.message });
   }
 });
 
-router.put('/companies/:id', async (req, res) => {
-  const companyId = req.params.id;
-  const companyFields = req.body;
-
-  try {
-    const result = await Company.updateCompany(companyId, companyFields);
-    return res.json(result);
-  } catch (error) {
-    return res.status(404).json({ error: error.message });
-  }
-});
-
-router.delete('/companies/:id', async (req, res) => {
-  const companyId = req.params.id;
-
-  try {
-    const result = await Company.deleteCompany(companyId);
-    return res.json(result);
-  } catch (error) {
-    return res.status(404).json({ error: error.message });
-  }
-});
-
-router.post('/people', async (req, res) => {
+router.post('/people', requireAuth, async (req, res) => {
   const personFields = req.body;
-
   try {
-    const result = await Person.createPerson(personFields);
+    const result = await Person.createPerson(personFields, req.user.id);
     return res.json(result);
   } catch (error) {
     return res.status(404).json({ error: error.message });
   }
 });
 
-router.get('/people', async (req, res) => {
+router.get('/people', requireAuth, async (req, res) => {
   try {
-    const result = await Person.getPeople();
+    const result = await Person.getPeople(req.user.id);
     return res.json(result);
   } catch (error) {
     return res.status(404).json({ error: error.message });
   }
 });
 
-router.get('/people/search', async (req, res) => {
+router.get('/people/search', requireAuth, async (req, res) => {
   const { q: searchTerm } = req.query;
 
   try {
-    const result = await Person.findPeople(searchTerm);
+    const result = await Person.findPeople(searchTerm, req.user.id);
     return res.json(result);
   } catch (error) {
     return res.status(404).json({ error: error.message });
   }
 });
 
-router.get('/people/:id', async (req, res) => {
+router.get('/people/:id', requireAuth, async (req, res) => {
   const personId = req.params.id;
 
   try {
-    const result = await Person.getPerson(personId);
+    const result = await Person.getPerson(personId, req.user.id);
     return res.json(result);
   } catch (error) {
     return res.status(404).json({ error: error.message });
   }
 });
 
-router.put('/people/:id', async (req, res) => {
+router.put('/people/:id', requireAuth, async (req, res) => {
   const personId = req.params.id;
   const personFields = req.body;
 
   try {
-    const result = await Person.updatePerson(personId, personFields);
+    const result = await Person.updatePerson(personId, personFields, req.user.id);
     return res.json(result);
   } catch (error) {
     return res.status(404).json({ error: error.message });
   }
 });
 
-router.delete('/people/:id', async (req, res) => {
+router.delete('/people/:id', requireAuth, async (req, res) => {
   const personId = req.params.id;
 
   try {
-    const result = await Person.deletePerson(personId);
+    const result = await Person.deletePerson(personId, req.user.id);
     return res.json(result);
   } catch (error) {
     return res.status(404).json({ error: error.message });
   }
 });
 
-router.post('/notes', async (req, res) => {
+router.post('/notes', requireAuth, async (req, res) => {
   const noteFields = req.body;
 
   try {
-    const result = await Note.createNote(noteFields);
+    const result = await Note.createNote(noteFields, req.user.id);
     return res.json(result);
   } catch (error) {
     return res.status(404).json({ error: error.message });
   }
 });
 
-router.get('/notes', async (req, res) => {
+router.get('/notes', requireAuth, async (req, res) => {
   try {
-    const result = await Note.getNotes();
+    const result = await Note.getNotes(req.user.id);
     return res.json(result);
   } catch (error) {
     return res.status(404).json({ error: error.message });
   }
 });
 
-router.get('/notes/search', async (req, res) => {
+router.get('/notes/search', requireAuth, async (req, res) => {
   const { q: searchTerm } = req.query;
 
   try {
-    const result = await Note.findNotes(searchTerm);
+    const result = await Note.findNotes(searchTerm, req.user.id);
     return res.json(result);
   } catch (error) {
     return res.status(404).json({ error: error.message });
   }
 });
 
-router.get('/notes/:id', async (req, res) => {
+router.get('/notes/:id', requireAuth, async (req, res) => {
   const noteId = req.params.id;
 
   try {
-    const result = await Note.getNote(noteId);
+    const result = await Note.getNote(noteId, req.user.id);
     return res.json(result);
   } catch (error) {
     return res.status(404).json({ error: error.message });
   }
 });
 
-router.put('/notes/:id', async (req, res) => {
+router.put('/notes/:id', requireAuth, async (req, res) => {
   const noteId = req.params.id;
   const noteFields = req.body;
 
   try {
-    const result = await Note.updateNote(noteId, noteFields);
+    const result = await Note.updateNote(noteId, noteFields, req.user.id);
     return res.json(result);
   } catch (error) {
     return res.status(404).json({ error: error.message });
   }
 });
 
-router.delete('/notes/:id', async (req, res) => {
+router.delete('/notes/:id', requireAuth, async (req, res) => {
   const noteId = req.params.id;
 
   try {
-    const result = await Note.deleteNote(noteId);
+    const result = await Note.deleteNote(noteId, req.user.id);
     return res.json(result);
   } catch (error) {
     return res.status(404).json({ error: error.message });
   }
 });
 
-router.post('/tasks', async (req, res) => {
+router.post('/tasks', requireAuth, async (req, res) => {
   const taskFields = req.body;
 
   try {
-    const result = await Task.createTask(taskFields);
+    const result = await Task.createTask(taskFields, req.user.id);
     return res.json(result);
   } catch (error) {
     return res.status(404).json({ error: error.message });
   }
 });
 
-router.get('/tasks', async (req, res) => {
+router.get('/tasks', requireAuth, async (req, res) => {
   try {
-    const result = await Task.getTasks();
+    const result = await Task.getTasks(req.user.id);
     return res.json(result);
   } catch (error) {
     return res.status(404).json({ error: error.message });
   }
 });
 
-router.get('/tasks/search', async (req, res) => {
+router.get('/tasks/search', requireAuth, async (req, res) => {
   const { q: searchTerm } = req.query;
 
   try {
-    const result = await Task.findTasks(searchTerm);
+    const result = await Task.findTasks(searchTerm, req.user.id);
     return res.json(result);
   } catch (error) {
     return res.status(404).json({ error: error.message });
   }
 });
 
-router.get('/tasks/:id', async (req, res) => {
+router.get('/tasks/:id', requireAuth, async (req, res) => {
   const taskId = req.params.id;
 
   try {
-    const result = await Task.getTask(taskId);
+    const result = await Task.getTask(taskId, req.user.id);
     return res.json(result);
   } catch (error) {
     return res.status(404).json({ error: error.message });
   }
 });
 
-router.put('/tasks/:id', async (req, res) => {
+router.put('/tasks/:id', requireAuth, async (req, res) => {
   const taskId = req.params.id;
   const taskFields = req.body;
 
   try {
-    const result = await Task.updateTask(taskId, taskFields);
+    const result = await Task.updateTask(taskId, taskFields, req.user.id);
     return res.json(result);
   } catch (error) {
     return res.status(404).json({ error: error.message });
   }
 });
 
-router.delete('/tasks/:id', async (req, res) => {
+router.delete('/tasks/:id', requireAuth, async (req, res) => {
   const taskId = req.params.id;
 
   try {
-    const result = await Task.deleteTask(taskId);
+    const result = await Task.deleteTask(taskId, req.user.id);
     return res.json(result);
   } catch (error) {
     return res.status(404).json({ error: error.message });

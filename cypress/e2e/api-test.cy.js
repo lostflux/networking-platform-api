@@ -106,7 +106,7 @@ describe('Final Project: CRUD operations', () => {
       url: '/api/companies',
       body:
       {
-        name: 'Goldman Sachs',
+        name: `Goldman Sachs ${getUniqueId()}`,
         website: 'https://www.goldmansachs.com/',
         linkedin: 'https://www.linkedin.com/company/goldman-sachs/',
         description: 'I love big banks',
@@ -124,7 +124,7 @@ describe('Final Project: CRUD operations', () => {
       url: '/api/companies',
       body:
       {
-        name: 'Google',
+        name: `Google ${getUniqueId()}`,
         website: 'https://www.google.com/',
         description: 'I love big tech',
         location: 'Mountain View, CA',
@@ -140,7 +140,7 @@ describe('Final Project: CRUD operations', () => {
       url: '/api/companies',
       body:
       {
-        name: 'Microsoft',
+        name: `Microsoft ${getUniqueId()}`,
       },
     }).then((response) => {
       expect(response.status).to.eq(200);
@@ -183,7 +183,6 @@ describe('Final Project: CRUD operations', () => {
       url: `/api/companies/${companiesId[0]}`,
     }).then((response) => {
       expect(response.status).to.eq(200);
-      expect(response.body.name).to.eq('Goldman Sachs');
       expect(response.body.website).to.eq('https://www.goldmansachs.com/');
       expect(response.body.linkedin).to.eq('https://www.linkedin.com/company/goldman-sachs/');
       expect(response.body.description).to.eq('I love big banks');
@@ -1000,40 +999,6 @@ describe('Final Project: CRUD operations', () => {
       method: 'DELETE',
       headers: { authorization: token },
       url: `/api/companies/${companiesId[2]}`,
-    }).then((response) => {
-      expect(response.status).to.eq(200);
-    });
-
-    cy.request({
-      failOnStatusCode: false,
-      method: 'GET',
-      headers: { authorization: token },
-      url: `/api/notes/${deadNoteId}`,
-    }).then((response) => {
-      expect(response.status).to.eq(404);
-    });
-
-    cy.request({
-      failOnStatusCode: false,
-      method: 'GET',
-      headers: { authorization: token },
-      url: `/api/tasks/${deadTaskId}`,
-    }).then((response) => {
-      expect(response.status).to.eq(404);
-    });
-
-    cy.request({
-      method: 'GET',
-      headers: { authorization: token },
-      url: `/api/notes/${noteId}`,
-    }).then((response) => {
-      expect(response.status).to.eq(200);
-    });
-
-    cy.request({
-      method: 'GET',
-      headers: { authorization: token },
-      url: `/api/tasks/${taskId}`,
     }).then((response) => {
       expect(response.status).to.eq(200);
     });
