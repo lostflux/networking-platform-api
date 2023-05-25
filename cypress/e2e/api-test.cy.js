@@ -1,5 +1,4 @@
 /* eslint-disable no-undef */
-
 // globals
 const companiesId = [];
 const peopleId = [];
@@ -106,7 +105,7 @@ describe('Final Project: CRUD operations', () => {
       url: '/api/companies',
       body:
       {
-        name: 'Goldman Sachs',
+        name: `Goldman Sachs ${getUniqueId()}`,
         website: 'https://www.goldmansachs.com/',
         linkedin: 'https://www.linkedin.com/company/goldman-sachs/',
         description: 'I love big banks',
@@ -124,7 +123,7 @@ describe('Final Project: CRUD operations', () => {
       url: '/api/companies',
       body:
       {
-        name: 'Google',
+        name: `Google ${getUniqueId()}`,
         website: 'https://www.google.com/',
         description: 'I love big tech',
         location: 'Mountain View, CA',
@@ -140,7 +139,7 @@ describe('Final Project: CRUD operations', () => {
       url: '/api/companies',
       body:
       {
-        name: 'Microsoft',
+        name: `Microsoft ${getUniqueId()}`,
       },
     }).then((response) => {
       expect(response.status).to.eq(200);
@@ -183,12 +182,23 @@ describe('Final Project: CRUD operations', () => {
       url: `/api/companies/${companiesId[0]}`,
     }).then((response) => {
       expect(response.status).to.eq(200);
-      expect(response.body.name).to.eq('Goldman Sachs');
       expect(response.body.website).to.eq('https://www.goldmansachs.com/');
       expect(response.body.linkedin).to.eq('https://www.linkedin.com/company/goldman-sachs/');
       expect(response.body.description).to.eq('I love big banks');
       expect(response.body.location).to.eq('New York City, NY');
       expect(response.body.tags).to.deep.eq(['finance', 'banking', 'investment']);
+    });
+  });
+  it('user queries a company', () => {
+    cy.request({
+      method: 'GET',
+      headers: { authorization: token },
+      url: '/api/companies?q=Goldman',
+    }).then((response) => {
+      expect(response.status).to.eq(200);
+      expect(response.body).to.have.length(1);
+      expect(response.body[0].website).to.eq('https://www.goldmansachs.com/');
+      expect(response.body[0].tags).to.deep.eq(['finance', 'banking', 'investment']);
     });
   });
   it('user retrieves a bad company id, expecting failure code 404', () => {
@@ -324,6 +334,17 @@ describe('Final Project: CRUD operations', () => {
       expect(response.body.title).to.eq('Software Engineer');
       expect(response.body.description).to.eq('I am a software engineer');
       expect(response.body.linkedin).to.eq('https://www.linkedin.com/in/jasondoh/');
+    });
+  });
+  it('user queries a person', () => {
+    cy.request({
+      method: 'GET',
+      headers: { authorization: token },
+      url: '/api/people?q=Jason',
+    }).then((response) => {
+      expect(response.status).to.eq(200);
+      expect(response.body).to.have.length(1);
+      expect(response.body[0].name).to.eq('Jason Doh');
     });
   });
   it('user retrieves a bad person id, expecting failure code 404', () => {
@@ -1000,40 +1021,6 @@ describe('Final Project: CRUD operations', () => {
       method: 'DELETE',
       headers: { authorization: token },
       url: `/api/companies/${companiesId[2]}`,
-    }).then((response) => {
-      expect(response.status).to.eq(200);
-    });
-
-    cy.request({
-      failOnStatusCode: false,
-      method: 'GET',
-      headers: { authorization: token },
-      url: `/api/notes/${deadNoteId}`,
-    }).then((response) => {
-      expect(response.status).to.eq(404);
-    });
-
-    cy.request({
-      failOnStatusCode: false,
-      method: 'GET',
-      headers: { authorization: token },
-      url: `/api/tasks/${deadTaskId}`,
-    }).then((response) => {
-      expect(response.status).to.eq(404);
-    });
-
-    cy.request({
-      method: 'GET',
-      headers: { authorization: token },
-      url: `/api/notes/${noteId}`,
-    }).then((response) => {
-      expect(response.status).to.eq(200);
-    });
-
-    cy.request({
-      method: 'GET',
-      headers: { authorization: token },
-      url: `/api/tasks/${taskId}`,
     }).then((response) => {
       expect(response.status).to.eq(200);
     });

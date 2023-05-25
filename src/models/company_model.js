@@ -6,6 +6,7 @@ const CompanySchema = new Schema({
   name: {
     type: String,
     required: true,
+    unique: true,
   },
   website: String,
   imageUrl: String,
@@ -24,7 +25,7 @@ const CompanySchema = new Schema({
   toJSON: { virtuals: true },
 });
 
-CompanySchema.index({ name: 'text', tags: 'text' });
+CompanySchema.index({ name: 'text', author: 1, description: 'text' });
 
 const CompanyModel = mongoose.model('Company', CompanySchema);
 
