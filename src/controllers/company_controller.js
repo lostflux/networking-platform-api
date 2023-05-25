@@ -3,7 +3,9 @@ import Person from '../models/person_model';
 import Note from '../models/note_model';
 import Task from '../models/task_model';
 
-export async function createCompany(companyFields) {
+export async function createCompany(companyFields, userId) {
+  console.log('create company');
+  console.log(companyFields);
   const company = new Company();
   company.name = companyFields.name;
   company.website = companyFields.website || '';
@@ -15,6 +17,7 @@ export async function createCompany(companyFields) {
   company.notes = companyFields.notes || [];
   company.tasks = companyFields.tasks || [];
   company.associatedPeople = companyFields.associatedPeople || [];
+  company.author = userId;
 
   try {
     const savedCompany = await company.save();
@@ -24,39 +27,47 @@ export async function createCompany(companyFields) {
   }
 }
 
-export async function getCompanies() {
+export async function getCompanies(query, userId) {
   try {
-    const companies = await Company.find({}, 'name website description imageUrl tags associatedPeople');
+    let companies;
+    if (query) {
+      companies = await Company.find({ author: userId, $text: { $search: query } }, 'name website description imageUrl tags associatedPeople');
+    } else {
+      companies = await Company.find({ author: userId }, 'name website description imageUrl tags associatedPeople');
+    }
     return companies;
   } catch (error) {
     throw new Error(`get company error: ${error}`);
   }
 }
 
-export async function findCompanies(query) {
-  try {
-    const searchedCompanies = await Company.find({ $text: { $search: query } }, 'name website tags associatedPeople');
-    return searchedCompanies;
-  } catch (error) {
-    throw new Error(`get company error: ${error}`);
-  }
-}
-
-export async function getCompany(id) {
+export async function getCompany(id, userId) {
   try {
     const company = await Company.findById(id);
     if (!company) {
       throw new Error('unable to find company');
     }
+
+    if (userId !== company.author.toString()) {
+      throw new Error('No permission error');
+    }
+
     return company;
   } catch (error) {
     throw new Error(`get company error: ${error}`);
   }
 }
 
-export async function deleteCompany(id) {
+export async function deleteCompany(id, userId) {
   try {
     const company = await Company.findById(id);
+    if (!company) {
+      throw new Error('unable to find company');
+    }
+
+    if (userId !== company.author.toString()) {
+      throw new Error('No permission error');
+    }
     if (company.associatedPeople) {
       company.associatedPeople.forEach(async (personId) => {
         const associatedPerson = await Person.findById(personId);
@@ -67,9 +78,7 @@ export async function deleteCompany(id) {
 
     if (company.notes) {
       company.notes.forEach(async (noteId) => {
-        console.log('here');
         const noteFound = await Note.findById(noteId);
-        console.log(noteFound.associatedPerson);
         if (noteFound.associatedPerson) {
           noteFound.associatedCompany = null;
           await noteFound.save();
@@ -97,9 +106,16 @@ export async function deleteCompany(id) {
   }
 }
 
-export async function updateCompany(id, companyFields) {
+export async function updateCompany(id, companyFields, userId) {
   try {
     const company = await Company.findById(id);
+    if (!company) {
+      throw new Error('unable to find company');
+    }
+
+    if (userId !== company.author.toString()) {
+      throw new Error('No permission error');
+    }
     const {
       name, website, linkedin, imageUrl, description, location, tags, associatedPeople, notes, tasks,
     } = companyFields;

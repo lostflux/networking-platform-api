@@ -16,7 +16,7 @@ const TaskSchema = new Schema({
   toJSON: { virtuals: true },
 });
 
-TaskSchema.index({ name: 'text', content: 'text', tags: 'text' });
+TaskSchema.index({ title: 1, dueDate: 1, author: 1 });
 
 const TaskModel = mongoose.model('Task', TaskSchema);
 
