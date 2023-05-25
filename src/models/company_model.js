@@ -25,7 +25,7 @@ const CompanySchema = new Schema({
   toJSON: { virtuals: true },
 });
 
-CompanySchema.index({ name: 1, author: 1, description: 'text' });
+CompanySchema.index({ name: 'text', author: 1, description: 'text' });
 
 const CompanyModel = mongoose.model('Company', CompanySchema);
 

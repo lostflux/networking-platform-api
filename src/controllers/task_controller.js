@@ -27,19 +27,15 @@ export async function createTask(taskFields, userId) {
   }
 }
 
-export async function getTasks(userId) {
+export async function getTasks(query, userId) {
   try {
-    const tasks = await Task.find({ author: userId }, 'title tags description');
+    let tasks;
+    if (query) {
+      tasks = await Task.find({ author: userId, $text: { $search: query } }, 'title tags description');
+    } else {
+      tasks = await Task.find({ author: userId }, 'title tags description');
+    }
     return tasks;
-  } catch (error) {
-    throw new Error(`get task error: ${error}`);
-  }
-}
-
-export async function findTasks(query, userId) {
-  try {
-    const searchedTask = await Task.find({ author: userId, $text: { $search: query } }, 'title tags description');
-    return searchedTask;
   } catch (error) {
     throw new Error(`get task error: ${error}`);
   }

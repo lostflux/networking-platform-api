@@ -1,5 +1,4 @@
 /* eslint-disable no-undef */
-
 // globals
 const companiesId = [];
 const peopleId = [];
@@ -190,6 +189,18 @@ describe('Final Project: CRUD operations', () => {
       expect(response.body.tags).to.deep.eq(['finance', 'banking', 'investment']);
     });
   });
+  it('user queries a company', () => {
+    cy.request({
+      method: 'GET',
+      headers: { authorization: token },
+      url: '/api/companies?q=Goldman',
+    }).then((response) => {
+      expect(response.status).to.eq(200);
+      expect(response.body).to.have.length(1);
+      expect(response.body[0].website).to.eq('https://www.goldmansachs.com/');
+      expect(response.body[0].tags).to.deep.eq(['finance', 'banking', 'investment']);
+    });
+  });
   it('user retrieves a bad company id, expecting failure code 404', () => {
     cy.request({
       failOnStatusCode: false,
@@ -323,6 +334,17 @@ describe('Final Project: CRUD operations', () => {
       expect(response.body.title).to.eq('Software Engineer');
       expect(response.body.description).to.eq('I am a software engineer');
       expect(response.body.linkedin).to.eq('https://www.linkedin.com/in/jasondoh/');
+    });
+  });
+  it('user queries a person', () => {
+    cy.request({
+      method: 'GET',
+      headers: { authorization: token },
+      url: '/api/people?q=Jason',
+    }).then((response) => {
+      expect(response.status).to.eq(200);
+      expect(response.body).to.have.length(1);
+      expect(response.body[0].name).to.eq('Jason Doh');
     });
   });
   it('user retrieves a bad person id, expecting failure code 404', () => {

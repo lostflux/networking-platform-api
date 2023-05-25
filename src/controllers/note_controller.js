@@ -29,19 +29,15 @@ export async function createNote(noteFields, userId) {
   }
 }
 
-export async function getNotes(userId) {
+export async function getNotes(query, userId) {
   try {
-    const notes = await Note.find({ author: userId }, 'title tags content');
+    let notes;
+    if (query) {
+      notes = await Note.find({ author: userId, $text: { $search: query } }, 'title tags content');
+    } else {
+      notes = await Note.find({ author: userId }, 'title tags content');
+    }
     return notes;
-  } catch (error) {
-    throw new Error(`get note error: ${error}`);
-  }
-}
-
-export async function findNotes(query, userId) {
-  try {
-    const searchedNote = await Note.find({ author: userId, $text: { $search: query } }, 'title tags content');
-    return searchedNote;
   } catch (error) {
     throw new Error(`get note error: ${error}`);
   }

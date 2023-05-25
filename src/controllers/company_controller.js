@@ -27,19 +27,15 @@ export async function createCompany(companyFields, userId) {
   }
 }
 
-export async function getCompanies(userId) {
+export async function getCompanies(query, userId) {
   try {
-    const companies = await Company.find({ author: userId }, 'name website description imageUrl tags associatedPeople');
+    let companies;
+    if (query) {
+      companies = await Company.find({ author: userId, $text: { $search: query } }, 'name website description imageUrl tags associatedPeople');
+    } else {
+      companies = await Company.find({ author: userId }, 'name website description imageUrl tags associatedPeople');
+    }
     return companies;
-  } catch (error) {
-    throw new Error(`get company error: ${error}`);
-  }
-}
-
-export async function findCompanies(query, userId) {
-  try {
-    const searchedCompanies = await Company.find({ author: userId, $text: { $search: query } }, 'name website tags associatedPeople');
-    return searchedCompanies;
   } catch (error) {
     throw new Error(`get company error: ${error}`);
   }

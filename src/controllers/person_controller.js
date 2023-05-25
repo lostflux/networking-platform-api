@@ -34,9 +34,14 @@ export async function createPerson(personFields, userId) {
   }
 }
 
-export async function getPeople(userId) {
+export async function getPeople(query, userId) {
   try {
-    const people = await Person.find({ author: userId }, 'name title email tags associatedCompany');
+    let people;
+    if (query) {
+      people = await Person.find({ author: userId, $text: { $search: query } }, 'name title email tags associatedCompany');
+    } else {
+      people = await Person.find({ author: userId }, 'name title email tags associatedCompany');
+    }
 
     return people;
   } catch (error) {

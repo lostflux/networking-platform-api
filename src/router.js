@@ -41,19 +41,10 @@ router.post('/companies', requireAuth, async (req, res) => {
 });
 
 router.get('/companies', requireAuth, async (req, res) => {
-  try {
-    const result = await Company.getCompanies(req.user.id);
-    return res.json(result);
-  } catch (error) {
-    return res.status(404).json({ error: error.message });
-  }
-});
-
-router.get('/companies/search', requireAuth, async (req, res) => {
-  const { q: searchTerm } = req.query;
+  const { q: query } = req.query;
 
   try {
-    const result = await Company.findCompanies(searchTerm, req.user.id);
+    const result = await Company.getCompanies(query, req.user.id);
     return res.json(result);
   } catch (error) {
     return res.status(404).json({ error: error.message });
@@ -104,19 +95,10 @@ router.post('/people', requireAuth, async (req, res) => {
 });
 
 router.get('/people', requireAuth, async (req, res) => {
-  try {
-    const result = await Person.getPeople(req.user.id);
-    return res.json(result);
-  } catch (error) {
-    return res.status(404).json({ error: error.message });
-  }
-});
-
-router.get('/people/search', requireAuth, async (req, res) => {
-  const { q: searchTerm } = req.query;
+  const { q: query } = req.query;
 
   try {
-    const result = await Person.findPeople(searchTerm, req.user.id);
+    const result = await Person.getPeople(query, req.user.id);
     return res.json(result);
   } catch (error) {
     return res.status(404).json({ error: error.message });
@@ -169,19 +151,10 @@ router.post('/notes', requireAuth, async (req, res) => {
 });
 
 router.get('/notes', requireAuth, async (req, res) => {
-  try {
-    const result = await Note.getNotes(req.user.id);
-    return res.json(result);
-  } catch (error) {
-    return res.status(404).json({ error: error.message });
-  }
-});
-
-router.get('/notes/search', requireAuth, async (req, res) => {
-  const { q: searchTerm } = req.query;
+  const { q: query } = req.query;
 
   try {
-    const result = await Note.findNotes(searchTerm, req.user.id);
+    const result = await Note.getNotes(query, req.user.id);
     return res.json(result);
   } catch (error) {
     return res.status(404).json({ error: error.message });
@@ -234,19 +207,9 @@ router.post('/tasks', requireAuth, async (req, res) => {
 });
 
 router.get('/tasks', requireAuth, async (req, res) => {
+  const { q: query } = req.query;
   try {
-    const result = await Task.getTasks(req.user.id);
-    return res.json(result);
-  } catch (error) {
-    return res.status(404).json({ error: error.message });
-  }
-});
-
-router.get('/tasks/search', requireAuth, async (req, res) => {
-  const { q: searchTerm } = req.query;
-
-  try {
-    const result = await Task.findTasks(searchTerm, req.user.id);
+    const result = await Task.getTasks(query, req.user.id);
     return res.json(result);
   } catch (error) {
     return res.status(404).json({ error: error.message });
