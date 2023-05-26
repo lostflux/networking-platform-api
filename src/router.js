@@ -96,10 +96,9 @@ router.post('/people', requireAuth, async (req, res) => {
 });
 
 router.get('/people', requireAuth, async (req, res) => {
-  const { q: query } = req.query;
 
   try {
-    const result = await Person.getPeople(query, req.user.id);
+    const result = await Person.getPeople(req.query, req.user.id);
     return res.json(result);
   } catch (error) {
     return res.status(404).json({ error: error.message });
