@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import Person from '../models/person_model';
 import Company from '../models/company_model';
 import Note from '../models/note_model';
@@ -37,8 +38,13 @@ export async function createPerson(personFields, userId) {
 export async function getPeople(query, userId) {
   try {
     let people;
-    if (query) {
-      people = await Person.find({ author: userId, $text: { $search: query } }, 'name title email tags associatedCompany');
+    if (query.q) {
+      const { q: searchTerms } = query;
+      people = await Person.find({ author: userId, $text: { $search: searchTerms } }, 'name title email tags associatedCompany');
+    } else if (query.ids) {
+      // eslint-disable-next-line new-cap
+      const searchIds = query.ids.split(',').map((id) => { return new mongoose.Types.ObjectId(id); });
+      people = await Person.find({ author: userId, _id: { $in: searchIds } }, 'name title email tags associatedCompany');
     } else {
       people = await Person.find({ author: userId }, 'name title email tags associatedCompany');
     }
