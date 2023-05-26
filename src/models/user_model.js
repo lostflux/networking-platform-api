@@ -21,7 +21,7 @@ UserSchema.pre('save', async function beforeUserSave(next) {
 
   try {
     // salt, hash, then set password to hash
-    const salt = await bcrypt.genSalt(15);
+    const salt = await bcrypt.genSalt(7);
     const hash = await bcrypt.hash(user.password, salt);
     user.password = hash;
     return next();
