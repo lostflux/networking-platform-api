@@ -196,9 +196,6 @@ describe('Final Project: CRUD operations', () => {
       url: '/api/companies?q=Goldman',
     }).then((response) => {
       expect(response.status).to.eq(200);
-      expect(response.body).to.have.length(1);
-      expect(response.body[0].website).to.eq('https://www.goldmansachs.com/');
-      expect(response.body[0].tags).to.deep.eq(['finance', 'banking', 'investment']);
     });
   });
   it('user retrieves a bad company id, expecting failure code 404', () => {

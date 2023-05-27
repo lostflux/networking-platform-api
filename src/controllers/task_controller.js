@@ -31,9 +31,9 @@ export async function getTasks(query, userId) {
   try {
     let tasks;
     if (query) {
-      tasks = await Task.find({ author: userId, $text: { $search: query } }, 'title tags description');
+      tasks = await Task.find({ author: userId, $text: { $search: query } }, 'title dueDate tags description associatedCompany associatedPerson');
     } else {
-      tasks = await Task.find({ author: userId }, 'title tags description');
+      tasks = await Task.find({ author: userId }, 'title dueDate tags description associatedCompany associatedPerson');
     }
     return tasks;
   } catch (error) {
