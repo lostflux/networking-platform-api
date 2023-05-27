@@ -45,6 +45,15 @@ export async function getPeople(query, userId) {
       // eslint-disable-next-line new-cap
       const searchIds = query.ids.split(',').map((id) => { return new mongoose.Types.ObjectId(id); });
       people = await Person.find({ author: userId, _id: { $in: searchIds } }, 'name title email description imageUrl tags associatedCompany');
+    } else if (query.companies) {
+      const companyIds = query.companies.split(',').map((id) => { return new mongoose.Types.ObjectId(id); });
+      people = await Person.find({ author: userId, associatedCompany: { $in: companyIds } }, 'name title email description imageUrl tags associatedCompany');
+    } else if (query.notes) {
+      const noteIds = query.notes.split(',').map((id) => { return new mongoose.Types.ObjectId(id); });
+      people = await Person.find({ author: userId, associatedCompany: { $in: noteIds } }, 'name title email description imageUrl tags associatedCompany');
+    } else if (query.tasks) {
+      const taskIds = query.tasks.split(',').map((id) => { return new mongoose.Types.ObjectId(id); });
+      people = await Person.find({ author: userId, tasks: { $in: taskIds } }, 'name title email description imageUrl tags associatedCompany');
     } else {
       people = await Person.find({ author: userId }, 'name title email description imageUrl tags associatedCompany');
     }
