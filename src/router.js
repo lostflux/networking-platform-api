@@ -42,10 +42,8 @@ router.post('/companies', requireAuth, async (req, res) => {
 });
 
 router.get('/companies', requireAuth, async (req, res) => {
-  const { q: query } = req.query;
-
   try {
-    const result = await Company.getCompanies(query, req.user.id);
+    const result = await Company.getCompanies(req.query, req.user.id);
     return res.json(result);
   } catch (error) {
     return res.status(404).json({ error: error.message });
@@ -96,7 +94,8 @@ router.post('/people', requireAuth, async (req, res) => {
 });
 
 router.get('/people', requireAuth, async (req, res) => {
-
+  const { q: query } = req.query;
+  console.log(`query: ${query}`);
   try {
     const result = await Person.getPeople(req.query, req.user.id);
     return res.json(result);
