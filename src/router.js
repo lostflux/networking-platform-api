@@ -206,9 +206,8 @@ router.post('/tasks', requireAuth, async (req, res) => {
 });
 
 router.get('/tasks', requireAuth, async (req, res) => {
-  const { q: query } = req.query;
   try {
-    const result = await Task.getTasks(query, req.user.id);
+    const result = await Task.getTasks(req.query, req.user.id);
     return res.json(result);
   } catch (error) {
     return res.status(404).json({ error: error.message });
