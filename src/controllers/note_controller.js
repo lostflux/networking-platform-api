@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import Note from '../models/note_model';
 import Company from '../models/company_model';
 import Person from '../models/person_model';
@@ -32,8 +33,14 @@ export async function createNote(noteFields, userId) {
 export async function getNotes(query, userId) {
   try {
     let notes;
-    if (query) {
+    if (query.q) {
       notes = await Note.find({ author: userId, $text: { $search: query } }, 'title tags content');
+    } else if (query.companies) {
+      const companyIds = query.companies.split(',').map((id) => { return new mongoose.Types.ObjectId(id); });
+      notes = await Note.find({ author: userId, associatedCompany: { $in: companyIds } }, 'title tags content associatedCompany associatedPerson');
+    } else if (query.people) {
+      const peopleIds = query.people.split(',').map((id) => { return new mongoose.Types.ObjectId(id); });
+      notes = await Note.find({ author: userId, associatedPerson: { $in: peopleIds } }, 'title tags content associatedCompany associatedPerson');
     } else {
       notes = await Note.find({ author: userId }, 'title tags content');
     }
