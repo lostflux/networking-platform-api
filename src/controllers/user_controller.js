@@ -7,9 +7,9 @@ export const signin = (user) => {
 }
 
 //note the lovely destructuring here indicating that we are passing in an object with these 3 keys
-export const signup = async ({ email, password }) => {
+export const signup = async ({ firstName, lastName, email, password }) => {
   if (!email || !password) {
-    throw new Error('You must provide email and password');
+    throw new Error('You must provide a name, email and password');
   }
   // See if a user with the given email exists
   const existingUser = await User.findOne({ email });
@@ -19,6 +19,8 @@ export const signup = async ({ email, password }) => {
   }
 
   const user = new User();
+  user.firstName = firstName;
+  user.lastName = lastName;
   user.email = email;
   user.password = password;
   await user.save();

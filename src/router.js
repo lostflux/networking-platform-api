@@ -14,8 +14,9 @@ router.get('/', (req, res) => {
 
 router.post('/signin', requireSignin, async (req, res) => {
   try {
+    console.log(req.user);
     const token = User.signin(req.user);
-    res.json({ token, email: req.user.email, id: req.user.id });
+    res.json({ token, firstName: req.user.firstName, lastName: req.user.lastName, email: req.user.email });
   } catch (error) {
     res.status(422).send({ error: error.toString() });
   }
@@ -23,9 +24,8 @@ router.post('/signin', requireSignin, async (req, res) => {
 
 router.post('/signup', async (req, res) => {
   try {
-    console.log(`req.body: ${req.body.email}`);
     const token = await User.signup(req.body);
-    res.json({ token, email: req.body.email });
+    res.json({ token, firstName: req.body.firstName, lastName: req.body.lastName, email: req.body.email });
   } catch (error) {
     res.status(422).send({ error: error.toString() });
   }
