@@ -20,7 +20,12 @@ describe('Authentication', () => {
     cy.request(
       'POST',
       '/api/signup',
-      { email, password: 'password' },
+      {
+        firstName: 'test',
+        lastName: 'subject',
+        email,
+        password: 'password',
+      },
     ).then((response) => {
       expect(response.status).to.eq(200);
       token = response.body.token;

@@ -3,6 +3,8 @@ import dotenv from 'dotenv';
 var bcrypt = require('bcryptjs');
 
 const UserSchema = new Schema({
+  firstName: String,
+  lastName: String,
   email: { type: String, unique: true, lowercase: true },
   password: { type: String },
 }, {
