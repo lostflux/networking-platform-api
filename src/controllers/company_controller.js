@@ -21,10 +21,14 @@ export async function createCompany(companyFields, userId) {
   company.author = userId;
 
   try {
+    const dupCompany = await Company.findOne({ name: company.name, author: userId });
+    if (dupCompany) {
+      throw new Error('Company already exists');
+    }
     const savedCompany = await company.save();
     return savedCompany;
   } catch (error) {
-    throw new Error(`create company error: ${error}`);
+    throw new Error(`Create company error: ${error}`);
   }
 }
 
