@@ -110,7 +110,7 @@ describe('Final Project: CRUD operations', () => {
       url: '/api/companies',
       body:
       {
-        name: `Goldman Sachs ${getUniqueId()}`,
+        name: 'Goldman Sachs',
         website: 'https://www.goldmansachs.com/',
         linkedin: 'https://www.linkedin.com/company/goldman-sachs/',
         description: 'I love big banks',
@@ -347,6 +347,17 @@ describe('Final Project: CRUD operations', () => {
       expect(response.status).to.eq(200);
       expect(response.body).to.have.length(1);
       expect(response.body[0].name).to.eq('Jason Doh');
+    });
+  });
+  it('user queries company using person Id', () => {
+    cy.request({
+      method: 'GET',
+      headers: { authorization: token },
+      url: `/api/companies?q=${personId[0]}`,
+    }).then((response) => {
+      expect(response.status).to.eq(200);
+      expect(response.body).to.have.length(1);
+      expect(response.body[0].name).to.eq('Google');
     });
   });
   it('user retrieves a bad person id, expecting failure code 404', () => {
