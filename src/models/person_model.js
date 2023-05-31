@@ -17,10 +17,7 @@ const PersonSchema = new Schema({
   tasks: [{ type: Schema.Types.ObjectId, ref: 'Task' }],
   author: { type: Schema.Types.ObjectId, ref: 'User' },
   lastTrackedEmailInteractionId: String,
-  emailInteractions: [{
-    emailDate: Date,
-    emailSubject: String,
-  }],
+  emailInteractions: [String],
 }, {
   toObject: { virtuals: true },
   toJSON: { virtuals: true },
