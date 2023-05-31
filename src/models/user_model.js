@@ -7,6 +7,8 @@ const UserSchema = new Schema({
   lastName: String,
   email: { type: String, unique: true, lowercase: true },
   password: { type: String },
+  googleToken: { type: String },
+  googleEmail: { type: String },
 }, {
   toObject: { virtuals: true },
   toJSON: { virtuals: true },

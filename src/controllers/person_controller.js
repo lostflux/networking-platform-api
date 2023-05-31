@@ -1,8 +1,10 @@
 import mongoose from 'mongoose';
+import Axios from 'axios';
 import Person from '../models/person_model';
 import Company from '../models/company_model';
 import Note from '../models/note_model';
 import Task from '../models/task_model';
+import User from '../models/user_model';
 
 export async function createPerson(personFields, userId) {
   const person = new Person();
@@ -210,4 +212,52 @@ async function deleteFromExAssociatedCompany(person, userId) {
   } catch (error) {
     throw new Error(`update associated company error: ${error}`);
   }
+}
+
+
+export const getEmails = async (id, userId) => {
+  const user = await User.findById(userId);
+  const company = await Company.findById(id);
+
+  const googleAccessToken = await refreshForAccess(user);
+
+  const res = await axios.get(`https://gmail.googleapis.com/gmail/v1/users/${user.googleEmail}/messages/?q=from:${company.emailDomain}`, {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${googleAccessToken}`,
+    },
+  });
+
+  let listOfMessages = res.data.messages;
+  if (company.lastTrackedEmailInteractionId) {
+    const lastInteractedEmailIndex = listOfMessages.findIndex((message) => { return message.id === company.lastTrackedEmailInteractionId; });
+    if (lastInteractedEmailIndex !== -1) {
+      listOfMessages = listOfMessages.splice(lastInteractedEmailIndex);
+    }
+  }
+
+  if (listOfMessages.length === 0) {
+    company.lastTrackedEmailInteractionId = res.data.messages[0].id;
+  }
+  // console.log(base64url.decode(res.data.raw));
+};
+
+async function refreshForAccess(user) {
+  const accessTokenCall = await axios.post(
+    'https://oauth2.googleapis.com/token',
+    {},
+    {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      params: {
+        client_id: process.env.CLIENT_ID,
+        client_secret: process.env.CLIENT_SECRET,
+        refresh_token: user.googleToken,
+        grant_type: 'refresh_token',
+      },
+    },
+  );
+
+  return accessTokenCall.data.access_token;
 }
