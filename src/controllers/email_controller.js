@@ -54,16 +54,39 @@ async function getPersonEmails(personId, user) {
   const googleAccessToken = await refreshForAccess(user);
 
   if (googleAccessToken) {
-    try {
-      console.log('hi');
-      const res = await axios.get(`https://gmail.googleapis.com/gmail/v1/users/yizhen.zhen.24@dartmouth.edu/messages?q=from:${person.email}`, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${googleAccessToken}`,
-        },
-      });
+    let retryCount = 0;
+    let response = null;
+    let error = null;
 
-      let listOfMessages = res.data.messages;
+    while (retryCount < 3) {
+      try {
+        console.log('hi');
+        // eslint-disable-next-line no-await-in-loop
+        response = await axios.get(`https://gmail.googleapis.com/gmail/v1/users/${user.googleEmail}/messages?q=from:${person.email}`, {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${googleAccessToken}`,
+          },
+        });
+
+        // Break out of the retry loop if the request succeeds
+        break;
+      } catch (err) {
+        error = err;
+        if (retryCount < 2 && err.code === 'ECONNRESET') {
+          // Log the error and retry
+          console.log('Connection reset by the server. Retrying...');
+          retryCount++;
+        } else {
+          // Handle other errors if needed
+          console.error(err);
+          break;
+        }
+      }
+    }
+
+    if (response) {
+      let listOfMessages = response.data.messages;
 
       console.log(person.lastTrackedEmailInteractionId);
       if (person.lastTrackedEmailInteractionId) {
@@ -72,22 +95,19 @@ async function getPersonEmails(personId, user) {
           listOfMessages = listOfMessages.slice(0, lastInteractedEmailIndex);
         }
       }
-      if (listOfMessages) {
-        if (listOfMessages.length !== 0) {
-          person.lastTrackedEmailInteractionId = listOfMessages[0].id;
-        }
 
-        const emailContent = await getEmailContent(googleAccessToken, listOfMessages.map((message) => { return message.id; }));
-        const emailContentWithId = emailContent.map((email) => { return email.snippet; });
-        person.emailInteractions.push(...emailContentWithId);
-        await person.save();
+      if (listOfMessages.length !== 0) {
+        person.lastTrackedEmailInteractionId = listOfMessages[0].id;
       }
-      return person.emailInteractions;
-      // eslint-disable-next-line no-plusplus
 
-      // console.log(base64url.decode(res.data.raw));
-    } catch (error) {
-      console.log(error);
+      const emailContent = await getEmailContent(user, googleAccessToken, listOfMessages.map((message) => { return message.id; }));
+      const emailContentWithId = emailContent.map((email) => { return email.snippet; });
+      person.emailInteractions.push(...emailContentWithId);
+      await person.save();
+
+      return person.emailInteractions;
+    } else {
+      console.error(`Failed to retrieve data. Retries exhausted. Last error: ${error}`);
       return person.emailInteractions;
     }
   }
@@ -111,7 +131,7 @@ async function refreshForAccess(user) {
             refresh_token: user.googleToken,
             grant_type: 'refresh_token',
           },
-        }
+        },
       );
       return accessTokenCall.data.access_token;
     } catch (error) {
@@ -128,12 +148,12 @@ async function refreshForAccess(user) {
   };
   return refreshToken();
 }
-async function getEmailContent(googleAccessToken, messageIdList) {
+async function getEmailContent(user, googleAccessToken, messageIdList) {
   const results = [];
-
-  const getContent = async (accessToken, messageId) => {
+  const { googleEmail } = user;
+  const getContent = async (googEmail, accessToken, messageId) => {
     try {
-      const res = await axios.get(`https://gmail.googleapis.com/gmail/v1/users/yizhen.zhen.24@dartmouth.edu/messages/${messageId}`, {
+      const res = await axios.get(`https://gmail.googleapis.com/gmail/v1/users/${googEmail}/messages/${messageId}`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${accessToken}`,
@@ -147,7 +167,7 @@ async function getEmailContent(googleAccessToken, messageIdList) {
       if (error.code === 'ECONNRESET') {
         // Retry the getContent call
         console.log('Connection reset by the server. Retrying...');
-        return getContent(accessToken, messageId);
+        return getContent(googleEmail, accessToken, messageId);
       }
 
       console.log(error);
@@ -163,7 +183,7 @@ async function getEmailContent(googleAccessToken, messageIdList) {
 
     while (attempt <= retryCount) {
       try {
-        const content = await getContent(googleAccessToken, messageId);
+        const content = await getContent(googleEmail, googleAccessToken, messageId);
         results.push(content);
         break; // Exit the retry loop if successful
       } catch (error) {
@@ -177,4 +197,3 @@ async function getEmailContent(googleAccessToken, messageIdList) {
 
   return results;
 }
-

@@ -44,6 +44,16 @@ router.post('/googleauth', requireAuth, async (req, res) => {
   }
 });
 
+router.put('/users', requireAuth, async (req, res) => {
+  const userFields = req.body;
+  try {
+    const results = await User.updateUser(userFields, req.user.id);
+    return res.json(results);
+  } catch (error) {
+    return res.status(422).send({ error: error.toString() });
+  }
+});
+
 router.post('/companies', requireAuth, async (req, res) => {
   const companyFields = req.body;
   try {
