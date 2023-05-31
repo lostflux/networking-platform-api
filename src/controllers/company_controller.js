@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import Company from '../models/company_model';
 import Person from '../models/person_model';
 import Note from '../models/note_model';
@@ -20,20 +21,30 @@ export async function createCompany(companyFields, userId) {
   company.author = userId;
 
   try {
+    const dupCompany = await Company.findOne({ name: company.name, author: userId });
+    if (dupCompany) {
+      throw new Error('Company already exists');
+    }
     const savedCompany = await company.save();
     return savedCompany;
   } catch (error) {
-    throw new Error(`create company error: ${error}`);
+    throw new Error(`Create company error: ${error}`);
   }
 }
 
 export async function getCompanies(query, userId) {
   try {
+    console.log(query);
     let companies;
-    if (query) {
-      companies = await Company.find({ author: userId, $text: { $search: query } }, 'name website description imageUrl tags associatedPeople');
+    if (query.q) {
+      const { q: searchTerms } = query;
+      companies = await Company.find({ author: userId, $text: { $search: searchTerms } }, 'name website location description imageUrl tags');
+    } else if (query.ids) {
+      // eslint-disable-next-line new-cap
+      const searchIds = query.ids.split(',').map((id) => { return new mongoose.Types.ObjectId(id); });
+      companies = await Company.find({ author: userId, _id: { $in: searchIds } }, 'name website location description imageUrl tags');
     } else {
-      companies = await Company.find({ author: userId }, 'name website description imageUrl tags associatedPeople');
+      companies = await Company.find({ author: userId }, 'name website location description imageUrl tags');
     }
     return companies;
   } catch (error) {

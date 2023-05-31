@@ -15,7 +15,7 @@ const NoteSchema = new Schema({
   toJSON: { virtuals: true },
 }, { _id: false });
 
-NoteSchema.index({ title: 1, author: 1, content: 'text', _id: 1 });
+NoteSchema.index({ title: 1, author: 1, content: 'text', _id: 1, associatedCompany: 1, associatedPerson: 1 });
 
 const NoteModel = mongoose.model('Note', NoteSchema);
 

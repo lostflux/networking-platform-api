@@ -14,8 +14,9 @@ router.get('/', (req, res) => {
 
 router.post('/signin', requireSignin, async (req, res) => {
   try {
+    console.log(req.user);
     const token = User.signin(req.user);
-    res.json({ token, email: req.user.email, id: req.user.id });
+    res.json({ token, firstName: req.user.firstName, lastName: req.user.lastName, email: req.user.email });
   } catch (error) {
     res.status(422).send({ error: error.toString() });
   }
@@ -23,9 +24,8 @@ router.post('/signin', requireSignin, async (req, res) => {
 
 router.post('/signup', async (req, res) => {
   try {
-    console.log(`req.body: ${req.body.email}`);
     const token = await User.signup(req.body);
-    res.json({ token, email: req.body.email });
+    res.json({ token, firstName: req.body.firstName, lastName: req.body.lastName, email: req.body.email });
   } catch (error) {
     res.status(422).send({ error: error.toString() });
   }
@@ -42,10 +42,8 @@ router.post('/companies', requireAuth, async (req, res) => {
 });
 
 router.get('/companies', requireAuth, async (req, res) => {
-  const { q: query } = req.query;
-
   try {
-    const result = await Company.getCompanies(query, req.user.id);
+    const result = await Company.getCompanies(req.query, req.user.id);
     return res.json(result);
   } catch (error) {
     return res.status(404).json({ error: error.message });
@@ -96,7 +94,8 @@ router.post('/people', requireAuth, async (req, res) => {
 });
 
 router.get('/people', requireAuth, async (req, res) => {
-
+  const { q: query } = req.query;
+  console.log(`query: ${query}`);
   try {
     const result = await Person.getPeople(req.query, req.user.id);
     return res.json(result);
@@ -151,10 +150,9 @@ router.post('/notes', requireAuth, async (req, res) => {
 });
 
 router.get('/notes', requireAuth, async (req, res) => {
-  const { q: query } = req.query;
 
   try {
-    const result = await Note.getNotes(query, req.user.id);
+    const result = await Note.getNotes(req.query, req.user.id);
     return res.json(result);
   } catch (error) {
     return res.status(404).json({ error: error.message });
@@ -207,9 +205,8 @@ router.post('/tasks', requireAuth, async (req, res) => {
 });
 
 router.get('/tasks', requireAuth, async (req, res) => {
-  const { q: query } = req.query;
   try {
-    const result = await Task.getTasks(query, req.user.id);
+    const result = await Task.getTasks(req.query, req.user.id);
     return res.json(result);
   } catch (error) {
     return res.status(404).json({ error: error.message });

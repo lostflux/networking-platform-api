@@ -40,26 +40,25 @@ export async function getPeople(query, userId) {
     let people;
     if (query.q) {
       const { q: searchTerms } = query;
-      people = await Person.find({ author: userId, $text: { $search: searchTerms } }, 'name title email tags associatedCompany');
+      people = await Person.find({ author: userId, $text: { $search: searchTerms } }, 'name title email description imageUrl tags associatedCompany');
     } else if (query.ids) {
       // eslint-disable-next-line new-cap
       const searchIds = query.ids.split(',').map((id) => { return new mongoose.Types.ObjectId(id); });
-      people = await Person.find({ author: userId, _id: { $in: searchIds } }, 'name title email tags associatedCompany');
+      people = await Person.find({ author: userId, _id: { $in: searchIds } }, 'name title email description imageUrl tags associatedCompany');
+    } else if (query.companies) {
+      const companyIds = query.companies.split(',').map((id) => { return new mongoose.Types.ObjectId(id); });
+      people = await Person.find({ author: userId, associatedCompany: { $in: companyIds } }, 'name title email description imageUrl tags associatedCompany');
+    } else if (query.notes) {
+      const noteIds = query.notes.split(',').map((id) => { return new mongoose.Types.ObjectId(id); });
+      people = await Person.find({ author: userId, associatedCompany: { $in: noteIds } }, 'name title email description imageUrl tags associatedCompany');
+    } else if (query.tasks) {
+      const taskIds = query.tasks.split(',').map((id) => { return new mongoose.Types.ObjectId(id); });
+      people = await Person.find({ author: userId, tasks: { $in: taskIds } }, 'name title email description imageUrl tags associatedCompany');
     } else {
-      people = await Person.find({ author: userId }, 'name title email tags associatedCompany');
+      people = await Person.find({ author: userId }, 'name title email description imageUrl tags associatedCompany');
     }
 
     return people;
-  } catch (error) {
-    throw new Error(`get person error: ${error}`);
-  }
-}
-
-export async function findPeople(query, userId) {
-  try {
-    const searchedPeople = await Person.find({ author: userId, $text: { $search: query } }, 'name title email tags associatedCompany');
-
-    return searchedPeople;
   } catch (error) {
     throw new Error(`get person error: ${error}`);
   }

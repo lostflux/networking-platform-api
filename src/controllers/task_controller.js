@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import Task from '../models/task_model';
 import Company from '../models/company_model';
 import Person from '../models/person_model';
@@ -30,10 +31,17 @@ export async function createTask(taskFields, userId) {
 export async function getTasks(query, userId) {
   try {
     let tasks;
-    if (query) {
-      tasks = await Task.find({ author: userId, $text: { $search: query } }, 'title tags description');
+    console.log(query);
+    if (query.q) {
+      tasks = await Task.find({ author: userId, $text: { $search: query } }, 'title dueDate tags description associatedCompany associatedPerson');
+    } else if (query.companies) {
+      const companyIds = query.companies.split(',').map((id) => { return new mongoose.Types.ObjectId(id); });
+      tasks = await Task.find({ author: userId, associatedCompany: { $in: companyIds } }, 'title dueDate tags description associatedCompany associatedPerson');
+    } else if (query.people) {
+      const peopleIds = query.people.split(',').map((id) => { return new mongoose.Types.ObjectId(id); });
+      tasks = await Task.find({ author: userId, associatedPerson: { $in: peopleIds } }, 'title dueDate tags description associatedCompany associatedPerson');
     } else {
-      tasks = await Task.find({ author: userId }, 'title tags description');
+      tasks = await Task.find({ author: userId }, 'title dueDate tags description associatedCompany associatedPerson');
     }
     return tasks;
   } catch (error) {
