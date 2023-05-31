@@ -34,7 +34,7 @@ export const signup = async ({
 
 export const setGoogleAuth = async (userId, code) => {
   const user = await User.findById(userId);
-
+  console.log(code);
   const res = await axios.post(
     'https://oauth2.googleapis.com/token',
     {},
@@ -49,9 +49,10 @@ export const setGoogleAuth = async (userId, code) => {
       },
     },
   );
+  console.log(res.data);
   user.googleToken = res.data.refresh_token;
-  user.googleEmail = jwtdecode(res.data.id_token).email;
-
+  //user.googleEmail = jwtdecode(res.data.id_token).email;
+  //console.log(user.googleToken);
   await user.save();
 };
 
