@@ -31,6 +31,27 @@ router.post('/signup', async (req, res) => {
   }
 });
 
+router.post('/googleauth', requireAuth, async (req, res) => {
+  const { code } = req.body;
+  try {
+    if (code) {
+      await User.setGoogleAuth(req.user.id, code);
+    }
+    return res.json({ message: 'Google Auth Set' });
+  } catch (error) {
+    return res.status(422).send({ error: error.toString() });
+  }
+});
+
+router.get('/email', requireAuth, async (req, res) => {
+  try {
+    const results = await User.getEmails(req.user.id);
+    return res.json({ results });
+  } catch (error) {
+    return res.status(422).send({ error: error.toString() });
+  }
+});
+
 router.post('/companies', requireAuth, async (req, res) => {
   const companyFields = req.body;
   try {

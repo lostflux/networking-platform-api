@@ -110,7 +110,7 @@ describe('Final Project: CRUD operations', () => {
       url: '/api/companies',
       body:
       {
-        name: 'Goldman Sachs',
+        name: `Goldman Sachs ${getUniqueId()}`,
         website: 'https://www.goldmansachs.com/',
         linkedin: 'https://www.linkedin.com/company/goldman-sachs/',
         description: 'I love big banks',
