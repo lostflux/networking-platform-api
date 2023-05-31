@@ -8,6 +8,7 @@ const CompanySchema = new Schema({
     required: true,
   },
   website: String,
+  emailDomain: String,
   imageUrl: String,
   linkedin: String,
   description: String,
@@ -19,6 +20,11 @@ const CompanySchema = new Schema({
   notes: [{ type: Schema.Types.ObjectId, ref: 'Note' }],
   tasks: [{ type: Schema.Types.ObjectId, ref: 'Task' }],
   author: { type: Schema.Types.ObjectId, ref: 'User' },
+  lastTrackedEmailInteractionId: String,
+  emailInteractions: [{
+    emailDate: Date,
+    emailSubject: String,
+  }],
 }, {
   toObject: { virtuals: true },
   toJSON: { virtuals: true },
