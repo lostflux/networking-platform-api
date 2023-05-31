@@ -5,6 +5,7 @@ import * as Person from './controllers/person_controller';
 import * as Note from './controllers/note_controller';
 import * as Task from './controllers/task_controller';
 import * as User from './controllers/user_controller';
+import * as Email from './controllers/email_controller';
 
 const router = Router();
 
@@ -38,15 +39,6 @@ router.post('/googleauth', requireAuth, async (req, res) => {
       await User.setGoogleAuth(req.user.id, code);
     }
     return res.json({ message: 'Google Auth Set' });
-  } catch (error) {
-    return res.status(422).send({ error: error.toString() });
-  }
-});
-
-router.get('/email', requireAuth, async (req, res) => {
-  try {
-    const results = await User.getEmails(req.user.id);
-    return res.json({ results });
   } catch (error) {
     return res.status(422).send({ error: error.toString() });
   }
@@ -265,6 +257,15 @@ router.delete('/tasks/:id', requireAuth, async (req, res) => {
     return res.json(result);
   } catch (error) {
     return res.status(404).json({ error: error.message });
+  }
+});
+
+router.get('/emails', requireAuth, async (req, res) => {
+  try {
+    const results = await Email.getEmails(req.query, req.user.id);
+    return res.json(results);
+  } catch (error) {
+    return res.status(422).send({ error: error.toString() });
   }
 });
 
