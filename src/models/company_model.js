@@ -23,7 +23,7 @@ const CompanySchema = new Schema({
   lastTrackedEmailInteractionId: String,
   emailInteractions: [{
     emailDate: Date,
-    emailSubject: String,
+    emailSnippet: String,
   }],
 }, {
   toObject: { virtuals: true },
