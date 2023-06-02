@@ -13,6 +13,7 @@ export async function createCompany(companyFields, userId) {
   company.name = companyFields.name;
   company.website = companyFields.website || '';
   company.linkedin = companyFields.linkedin || '';
+  company.emailDomain = companyFields.emailDomain || '';
   company.imageUrl = companyFields.imageUrl || '';
   company.location = companyFields.location || '';
   company.description = companyFields.description || '';
@@ -129,14 +130,18 @@ export async function updateCompany(id, companyFields, userId) {
     if (userId !== company.author.toString()) {
       throw new Error('No permission error');
     }
+
     const {
-      name, website, linkedin, imageUrl, description, location, tags, associatedPeople, notes, tasks,
+      name, website, linkedin, emailDomain, imageUrl, description, location, tags, associatedPeople, notes, tasks,
     } = companyFields;
     if (name) {
       company.name = name;
     }
     if (website) {
       company.website = website;
+    }
+    if (emailDomain) {
+      company.emailDomain = emailDomain;
     }
     if (imageUrl) {
       company.imageUrl = imageUrl;
@@ -162,6 +167,7 @@ export async function updateCompany(id, companyFields, userId) {
     if (tasks) {
       company.tasks = tasks;
     }
+
     return company.save();
   } catch (error) {
     throw new Error(`delete company error: ${error}`);
