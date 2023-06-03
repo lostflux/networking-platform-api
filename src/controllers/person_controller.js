@@ -42,7 +42,8 @@ export async function getPeople(query, userId) {
     let people;
     if (query.q) {
       const { q: searchTerms } = query;
-      people = await Person.find({ author: userId, $text: { $search: searchTerms } }, 'name title email description imageUrl tags associatedCompany');
+      // find all people whose name contains the search terms
+      people = await Person.find({ author: userId, name: { $regex: searchTerms, $options: 'i' } }, 'name title email description imageUrl tags associatedCompany');
     } else if (query.ids) {
       // eslint-disable-next-line new-cap
       const searchIds = query.ids.split(',').map((id) => { return new mongoose.Types.ObjectId(id); });
