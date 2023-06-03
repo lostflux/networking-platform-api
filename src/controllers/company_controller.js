@@ -41,7 +41,8 @@ export async function getCompanies(query, userId) {
     let companies;
     if (query.q) {
       const { q: searchTerms } = query;
-      companies = await Company.find({ author: userId, $text: { $search: searchTerms } }, 'name website location description imageUrl tags');
+      // find all companies whose name contains the search terms
+      companies = await Company.find({ author: userId, name: { $regex: searchTerms, $options: 'i' } }, 'name website location description imageUrl tags');
       console.log(companies);
     } else if (query.ids) {
       // eslint-disable-next-line new-cap
