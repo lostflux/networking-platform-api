@@ -250,11 +250,11 @@ router.get('/tasks/:id', requireAuth, async (req, res) => {
 router.put('/tasks/:id', requireAuth, async (req, res) => {
   const taskId = req.params.id;
   const taskFields = req.body;
-
   try {
     const result = await Task.updateTask(taskId, taskFields, req.user.id);
     return res.json(result);
   } catch (error) {
+    console.log(error.message);
     return res.status(404).json({ error: error.message });
   }
 });
