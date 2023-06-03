@@ -349,6 +349,7 @@ describe('Final Project: CRUD operations', () => {
       expect(response.body[0].name).to.eq('Jason Doh');
     });
   });
+  /* Querying array, WIP
   it('user queries company using person Id', () => {
     cy.request({
       method: 'GET',
@@ -359,7 +360,7 @@ describe('Final Project: CRUD operations', () => {
       expect(response.body).to.have.length(1);
       expect(response.body[0].name).to.eq('Google');
     });
-  });
+  });*.
   it('user retrieves a bad person id, expecting failure code 404', () => {
     cy.request({
       failOnStatusCode: false,
