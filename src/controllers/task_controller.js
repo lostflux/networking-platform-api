@@ -109,7 +109,7 @@ export async function updateTask(id, taskFields, userId) {
       task.description = description;
     }
     if (dueDate) {
-      task.description = description;
+      task.dueDate = dueDate;
     }
     if (tags) {
       task.tags = tags;
