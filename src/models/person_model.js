@@ -26,7 +26,9 @@ const PersonSchema = new Schema({
   toJSON: { virtuals: true },
 });
 
-PersonSchema.index({ name: 'text', author: 1, description: 'text', _id: 1, associatedCompany: 1, notes: 'text', tasks: 'text' });
+PersonSchema.index({ author: 1, associatedCompany: 1 });
+
+PersonSchema.index({ name: 'text', description: 'text', notes: 'text', tasks: 'text' });
 
 const PersonModel = mongoose.model('Person', PersonSchema);
 

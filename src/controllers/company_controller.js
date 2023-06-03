@@ -37,11 +37,12 @@ export async function createCompany(companyFields, userId) {
 
 export async function getCompanies(query, userId) {
   try {
-    console.log(query);
+    console.log(query.q);
     let companies;
     if (query.q) {
       const { q: searchTerms } = query;
       companies = await Company.find({ author: userId, $text: { $search: searchTerms } }, 'name website location description imageUrl tags');
+      console.log(companies);
     } else if (query.ids) {
       // eslint-disable-next-line new-cap
       const searchIds = query.ids.split(',').map((id) => { return new mongoose.Types.ObjectId(id); });
@@ -51,6 +52,7 @@ export async function getCompanies(query, userId) {
     }
     return companies;
   } catch (error) {
+    console.log(error);
     throw new Error(`get company error: ${error}`);
   }
 }
