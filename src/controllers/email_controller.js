@@ -56,7 +56,7 @@ async function getPersonEmails(personId, user) {
   if (googleAccessToken) {
     try {
       console.log('hi');
-      const res = await axios.get(`https://gmail.googleapis.com/gmail/v1/users/yizhen.zhen.24@dartmouth.edu/messages?q=from:${person.email}`, {
+      const res = await axios.get(`https://gmail.googleapis.com/gmail/v1/users/cindy.l.wang.24@dartmouth.edu/messages?q=from:${person.email}`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${googleAccessToken}`,
@@ -111,7 +111,7 @@ async function refreshForAccess(user) {
             refresh_token: user.googleToken,
             grant_type: 'refresh_token',
           },
-        }
+        },
       );
       return accessTokenCall.data.access_token;
     } catch (error) {
@@ -133,7 +133,7 @@ async function getEmailContent(googleAccessToken, messageIdList) {
 
   const getContent = async (accessToken, messageId) => {
     try {
-      const res = await axios.get(`https://gmail.googleapis.com/gmail/v1/users/yizhen.zhen.24@dartmouth.edu/messages/${messageId}`, {
+      const res = await axios.get(`https://gmail.googleapis.com/gmail/v1/users/cindy.l.wang.24@dartmouth.edu/messages/${messageId}`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${accessToken}`,
@@ -177,4 +177,3 @@ async function getEmailContent(googleAccessToken, messageIdList) {
 
   return results;
 }
-
