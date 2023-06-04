@@ -31,7 +31,7 @@ const CompanySchema = new Schema({
 });
 
 CompanySchema.index({ author: 1 });
-CompanySchema.index({ name: 'text', description: 'text', associatedPeople: 'text', notes: 'text', tasks: 'text' });
+CompanySchema.index({ name: 'text' });
 
 const CompanyModel = mongoose.model('Company', CompanySchema);
 

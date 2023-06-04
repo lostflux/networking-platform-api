@@ -28,7 +28,7 @@ const PersonSchema = new Schema({
 
 PersonSchema.index({ author: 1, associatedCompany: 1 });
 
-PersonSchema.index({ name: 'text', description: 'text', notes: 'text', tasks: 'text' });
+PersonSchema.index({ name: 'text', notes: 'text', tasks: 'text' });
 
 const PersonModel = mongoose.model('Person', PersonSchema);
 
