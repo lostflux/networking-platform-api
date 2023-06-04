@@ -44,6 +44,16 @@ router.post('/googleauth', requireAuth, async (req, res) => {
   }
 });
 
+router.put('/users', requireAuth, async (req, res) => {
+  const userFields = req.body;
+  try {
+    const results = await User.updateUser(userFields, req.user.id);
+    return res.json(results);
+  } catch (error) {
+    return res.status(422).send({ error: error.toString() });
+  }
+});
+
 router.post('/companies', requireAuth, async (req, res) => {
   const companyFields = req.body;
   try {
@@ -240,11 +250,11 @@ router.get('/tasks/:id', requireAuth, async (req, res) => {
 router.put('/tasks/:id', requireAuth, async (req, res) => {
   const taskId = req.params.id;
   const taskFields = req.body;
-
   try {
     const result = await Task.updateTask(taskId, taskFields, req.user.id);
     return res.json(result);
   } catch (error) {
+    console.log(error.message);
     return res.status(404).json({ error: error.message });
   }
 });

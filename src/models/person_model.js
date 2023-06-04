@@ -17,13 +17,18 @@ const PersonSchema = new Schema({
   tasks: [{ type: Schema.Types.ObjectId, ref: 'Task' }],
   author: { type: Schema.Types.ObjectId, ref: 'User' },
   lastTrackedEmailInteractionId: String,
-  emailInteractions: [String],
+  emailInteractions: [{
+    emailDate: Date,
+    emailSnippet: String,
+  }],
 }, {
   toObject: { virtuals: true },
   toJSON: { virtuals: true },
 });
 
-PersonSchema.index({ name: 'text', author: 1, description: 'text', _id: 1, associatedCompany: 1, notes: 'text', tasks: 'text' });
+PersonSchema.index({ author: 1, associatedCompany: 1 });
+
+PersonSchema.index({ name: 'text', notes: 'text', tasks: 'text' });
 
 const PersonModel = mongoose.model('Person', PersonSchema);
 

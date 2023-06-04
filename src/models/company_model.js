@@ -23,14 +23,15 @@ const CompanySchema = new Schema({
   lastTrackedEmailInteractionId: String,
   emailInteractions: [{
     emailDate: Date,
-    emailSubject: String,
+    emailSnippet: String,
   }],
 }, {
   toObject: { virtuals: true },
   toJSON: { virtuals: true },
 });
 
-CompanySchema.index({ name: 'text', author: 1, description: 'text', _id: 1, associatedPeople: 'text', notes: 'text', tasks: 'text' });
+CompanySchema.index({ author: 1 });
+CompanySchema.index({ name: 'text' });
 
 const CompanyModel = mongoose.model('Company', CompanySchema);
 

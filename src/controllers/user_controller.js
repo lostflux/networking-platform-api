@@ -32,6 +32,28 @@ export const signup = async ({
   return tokenForUser(user);
 };
 
+export async function updateUser(userFields, id) {
+  try {
+    const user = await User.findById(id);
+    if (!user) {
+      throw new Error('unable to find user');
+    }
+
+    const {
+      googleEmail,
+    } = userFields;
+    if (googleEmail) {
+      user.googleEmail = googleEmail;
+    }
+
+    const savedUser = await user.save();
+    return savedUser.googleEmail;
+  } catch (error) {
+    throw new Error(`update user error: ${error}`);
+  }
+}
+
+// Google auth was done mostly by myself with some help using https://www.youtube.com/watch?v=0KoZSVnTnkA&ab_channel=CooperCodes
 export const setGoogleAuth = async (userId, code) => {
   const user = await User.findById(userId);
   console.log(code);
